@@ -1,8 +1,7 @@
+import { assertBy, Assertion } from './assertions'
 import { TypeValidation } from './Common'
 import { maybe } from './maybe'
 import {
-  assertBy,
-  Assertion,
   createRejection,
   literal,
   registerRejectingValidator,

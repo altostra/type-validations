@@ -1,6 +1,10 @@
 {
-    "extends": "./tsconfig.base.json",
-    "compilerOptions": {
-        "sourceMap": true
-    }
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
 }
