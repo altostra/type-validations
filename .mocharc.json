@@ -1,0 +1,15 @@
+{
+  "require": [
+    "source-map-support/register",
+    "tsconfig-paths/register",
+    "ts-node/register"
+  ],
+  "fullTrace": true,
+  "bail": true,
+  "color": true,
+  "exit": true,
+  "extension": [
+    "spec.ts",
+    "integ.ts"
+  ]
+}

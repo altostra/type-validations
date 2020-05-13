@@ -1,0 +1,38 @@
+{
+  "name": "type-validations",
+  "version": "1.0.0",
+  "description": "Utility functions to create type-guards and assertions.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha \"packages/**/*.spec.ts\" --recursive",
+    "build:clean": "rimraf lib",
+    "build": "npm run build:clean && tsc -p ./tsconfig.build.json",
+    "build:debug": "tsc -p .",
+    "build:watch": "npm run build:debug -- -w",
+    "build:minify": "node scripts/minify-lib.js",
+    "build:production": "npm run build && npm run build:minify",
+    "prepublishOnly": "npm ci && npm test && npm run build:production && npm ci --production"
+  },
+  "keywords": [
+    "type",
+    "validation",
+    "type",
+    "guards",
+    "assertions",
+    "input",
+    "validation"
+  ],
+  "author": "Altostra Inc.",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.12.39",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2",
+    "rimraf": "^3.0.2",
+    "terser": "^4.6.13",
+    "typescript": "^3.9.2"
+  },
+  "dependencies": {}
+}
