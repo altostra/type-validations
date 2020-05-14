@@ -84,7 +84,8 @@ describe('objectOf type-validation', () => {
         expect(nonStrictTuple[typeValidatorType]).to
           .equal(`[
   number,
-  string
+  string,
+  ...*[]
 ]`)
       })
 
@@ -161,7 +162,8 @@ describe('objectOf type-validation', () => {
   number,
   ...,
   symbol,
-  null
+  null,
+  ...*[]
 ]`)
       })
     })
@@ -273,9 +275,6 @@ describe('objectOf type-validation', () => {
         expect(callback.args[0][0].path).to.be.deep.equal([1])
 
         callback.resetHistory()
-
-        nonStrictTuple([4, '3', true], callback)
-        expect(callback.args[0][0].path).to.be.deep.equal(['length'])
       })
     })
   })

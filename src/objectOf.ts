@@ -74,7 +74,11 @@ export function objectOf<T extends object>(
 
   if (Array.isArray(propsValidation)) {
     isTuple = true
-    validationEntries.push(['length', is(propsValidation.length)])
+    strict = strict ?? true
+
+    if (strict) {
+      validationEntries.push(['length', is(propsValidation.length)])
+    }
   }
 
   const allValidatonTypes = validationEntries
@@ -83,7 +87,7 @@ export function objectOf<T extends object>(
       : `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
 
   // Remove length validation from printed type
-  if (isTuple) {
+  if (isTuple && strict) {
     allValidatonTypes.pop()
   }
 
@@ -97,6 +101,9 @@ export function objectOf<T extends object>(
 
   if (!strict && !isTuple) {
     validationTypes.push('[*]: *')
+  }
+  else if (!strict) {
+    validationTypes.push('...*[]')
   }
 
   const type = isTuple

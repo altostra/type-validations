@@ -30,3 +30,35 @@ Returns a predicate (no second arguemnt) for the specified validator.
 
 ### `asPredicate(): (value: unknown) => value is Record<never, unknown>`
 Returns a type-guard predicate (no second arguemnt) for the specified validator.
+
+## Example
+
+```ts
+import { isEmptyObject, typeValidatorType } from '@altostra/type-validations'
+
+console.log(isEmptyObject[typeValidatorType]) // {}
+
+console.log(isEmptyObject({}, console.log)) // true
+console.log(isEmptyObject([], console.log)) // true
+
+console.log(isEmptyObject('A', console.log)) /* {
+  path: [],
+  reason: "Value <'A'> is not an object",
+  propertyType: '{}'
+}
+false */
+console.log(isEmptyObject({ prop: undefined }, console.log))  /* {
+  path: [],
+  reason: 'Object <{ prop: undefined }> is not emtpy',
+  propertyType: '{}'
+}
+false */
+console.log(isEmptyObject([0], console.log)) /* { path: [], reason: 'Object <[ 0 ]> is not emtpy', propertyType: '{}' }
+false */
+
+const incognito: unknown = {}
+
+if (isEmptyObject(incognito)) {
+    Object.keys(incognito) // []
+}
+```

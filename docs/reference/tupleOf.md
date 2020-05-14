@@ -18,3 +18,44 @@ The tuple positional validations.
 
 ## Return value
 A ` TypeValidation<T>`
+
+## Example
+
+```ts
+import { tupleOf, typeValidatorType } from '@altostra/type-validations'
+import { number, string } from '@altostra/type-validations/lib/primitives'
+
+const isMyTuple = tupleOf(number, string)
+
+console.log(isMyTuple[typeValidatorType]) /* [
+  number,
+  string
+] */
+
+console.log(isMyTuple([6, 'str'], console.log)) // true
+
+console.log(isMyTuple(['a-string', 123], console.log)) /* {
+  path: [ 0 ],
+  reason: "Value <'a-string'> is not a number",
+  propertyType: 'number'
+}
+false */
+console.log(isMyTuple([123], console.log)) /* {
+  path: [ 1 ],
+  reason: 'Value <undefined> is not a string',
+  propertyType: 'string'
+}
+false */
+console.log(isMyTuple([123, 'a-string', 5], console.log)) /* {
+  path: [ 'length' ],
+  reason: 'Value <3> is not equal to <2>',
+  propertyType: '2'
+}
+false */
+
+const myTupleIncofnito: unknown = ['str', 6]
+
+if (isMyTuple(myTupleIncofnito)) {
+    console.log(myTupleIncofnito[1]) // 6
+}
+```
