@@ -8,11 +8,11 @@ import {
   rejectionMessage,
   ValidationRejection
   } from './RejectionReasons'
-import type { JsType, FromTypeOf } from './JSTypes'
+import type { FromTypeOf, JsType } from './JSTypes'
 
 function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTypeOf<T>> {
   return registerRejectingValidator(
-    ((val, rejectionReason?) => {
+    ((val, rejectionReason?): val is FromTypeOf<T> => {
       if (typeof val === type) {
         return true
       }
@@ -22,7 +22,7 @@ function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTyp
         type))
 
       return false
-    }) as TypeValidation<FromTypeOf<T>>,
+    }),
     type
   )
 }
@@ -59,8 +59,8 @@ export function booleanAssertion(errFactory: ErrFactory): Assertion<boolean> {
 /**
  * Validates that the parameter is a null
  */
-export const nullValidator = registerRejectingValidator(
-  ((x: unknown, rejectionReason?) => {
+export const nullValidation = registerRejectingValidator(
+  ((x: unknown, rejectionReason?): x is null => {
     if (x === null) {
       return true
     }
@@ -71,20 +71,19 @@ export const nullValidator = registerRejectingValidator(
     ))
 
     return false
-  }) as TypeValidation<null>,
+  }),
   'null'
 )
-export { nullValidator as null }
+export { nullValidation as null }
 
 export function nullAssertion(errFactory: ErrFactory): Assertion<null> {
-  return assertBy(nullValidator, errFactory)
+  return assertBy(nullValidation, errFactory)
 }
 
 /**
  * Validates that the parameter is an undefined
  */
-export const undefined = simpleTypeValidation('undefined')
-export const undefinedValidation = undefined
+export const undefinedValidation = simpleTypeValidation('undefined')
 
 export function undefinedAssertion(errFactory: ErrFactory): Assertion<undefined> {
   return assertBy(undefinedValidation, errFactory)
@@ -112,35 +111,33 @@ export function bigintAssertion(errFactory: ErrFactory): Assertion<bigint> {
  * Valiadtes any parameter
  */
 export const any = registerRejectingValidator(
-  (() => true) as any as TypeValidation<any>,
+  ((x: unknown): x is any => true),
   '*'
 )
-export function anyAssertion(errFactory?: ErrFactory): Assertion<number> {
+export function anyAssertion(errFactory?: ErrFactory): Assertion<any> {
   return () => { }
 }
 
 /**
  * Valiadtes any parameter
  */
-export const unknown = any as TypeValidation<unknown>
+export const unknown: TypeValidation<unknown> = any
 
-export function unknownAssertion(errFactory?: ErrFactory): Assertion<unknown> {
-  return () => { }
-}
+export const unknownAssertion: (errFactory?: ErrFactory) => Assertion<unknown> = anyAssertion
 
 /**
  *
  * Invaliadtes any parameter
  */
 export const never = registerRejectingValidator(
-  ((val, rejectedReason?) => {
+  ((val, rejectedReason?): val is never => {
     rejectedReason?.(createRejection(
-      rejectionMessage`Value ${val} exists therefor is not not 'never'.`,
+      rejectionMessage`Value ${val} exists therefor is not 'never'.`,
       'X (never)'
     ))
 
     return false
-  }) as TypeValidation<any>,
+  }),
   'X (never)'
 )
 
@@ -178,7 +175,7 @@ export function maybeBooleanAssertion(errFactory: ErrFactory): Assertion<boolean
 /**
  * Validates that the parameter is a null or undefined
  */
-export const nullOrUndefined = maybe(nullValidator)
+export const nullOrUndefined = maybe(nullValidation)
 
 export function nullOrUndefinedAssertion(errFactory: ErrFactory): Assertion<null | undefined> {
   return assertBy(nullOrUndefined, errFactory)

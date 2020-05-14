@@ -5,8 +5,7 @@ import { asRejectingValidator, ValidationRejection } from './RejectionReasons'
  * A function that if completes without throwing an error only if
  * the passed value is of specified type
  */
-export type Assertion<T extends TInput, TInput = unknown> =
-  (val: TInput) => asserts val is T
+export type Assertion<T> = (val: unknown) => asserts val is T
 
 /**
  * Creates an assertion function from the provided validation
@@ -15,15 +14,15 @@ export type Assertion<T extends TInput, TInput = unknown> =
  *
  * @returns An assertion function for the validated type
  */
-export function assertBy<T extends TInput, TInput = unknown>(
-  validation: AnyTypeValidation<T, TInput>,
+export function assertBy<T>(
+  validation: AnyTypeValidation<T>,
   errFactory: (val: unknown, rejetions: ValidationRejection[]) => unknown
-): Assertion<T, TInput> {
+): Assertion<T> {
   errFactory = errFactory
 
   const rejectingValidation = asRejectingValidator(validation)
 
-  return function assertion(val: TInput) {
+  return function assertion(val: unknown) {
     const rejections: ValidationRejection[] = []
 
     if (!rejectingValidation(val, rej => rejections.push(rej))) {

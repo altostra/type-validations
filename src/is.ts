@@ -11,7 +11,7 @@ export function is<T>(expectedValue: T): TypeValidation<T> {
   const type = typeOf(expectedValue)
 
   return registerRejectingValidator(
-    ((actualValue, rejectionReason?) => {
+    ((actualValue, rejectionReason?): actualValue is T => {
       const result = actualValue === expectedValue
 
       if (!result && rejectionReason) {
@@ -22,7 +22,7 @@ export function is<T>(expectedValue: T): TypeValidation<T> {
       }
 
       return result
-    }) as TypeValidation<T>,
+    }),
     type
   )
 }

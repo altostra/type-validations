@@ -19,7 +19,7 @@ export function arrayOf<T>(
   elementTypeValidation = asRejectingValidator(elementTypeValidation)
 
   return registerRejectingValidator(
-    ((val: unknown, rejectionReasons?) => {
+    ((val: unknown, rejectionReasons?): val is T[] => {
       if (!Array.isArray(val)) {
         rejectionReasons && rejectionReasons(createRejection(
           rejectionMessage`Value ${val} is not an array`,
@@ -37,7 +37,7 @@ export function arrayOf<T>(
           return rejectionReasons(rejection)
         })
       ))
-    }) as TypeValidation<T[]>,
+    }),
     type
   )
 }

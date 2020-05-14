@@ -1,9 +1,12 @@
-import { TypeValidation } from './Common'
 import { createRejection, registerRejectingValidator, rejectionMessage } from './RejectionReasons'
 
 const IS_EMPTY_ARRAY_TYPE = '[]'
+
+/**
+ * A validator that checks if a value is an empty array
+ */
 export const isEmptyArray = registerRejectingValidator(
-  ((val: unknown, rejectionReasons?) => {
+  ((val: unknown, rejectionReasons?): val is [] => {
     if (!Array.isArray(val)) {
       rejectionReasons?.(createRejection(
         rejectionMessage`Value ${val} is not an array`,
@@ -22,7 +25,7 @@ export const isEmptyArray = registerRejectingValidator(
     }
 
     return true
-  }) as TypeValidation<[]>,
+  }),
   IS_EMPTY_ARRAY_TYPE
 )
 

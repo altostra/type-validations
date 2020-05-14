@@ -25,9 +25,9 @@ export function recordOf<T>(
   propsTypeValidation = asRejectingValidator(propsTypeValidation)
 
   return registerRejectingValidator(
-    ((val: unknown, rejectionReasons?) => {
+    ((val: unknown, rejectionReasons?): val is Record<string | number, T> => {
       if (!isObject(val)) {
-        rejectionReasons && rejectionReasons(createRejection(
+        rejectionReasons?.(createRejection(
           rejectionMessage`Value ${val} is not an object`,
           type,
         ))
@@ -45,7 +45,7 @@ export function recordOf<T>(
               return rejectionReasons(rejection)
             })
           ))
-    }) as TypeValidation<Record<string | number, T>>,
+    }),
     type
   )
 }

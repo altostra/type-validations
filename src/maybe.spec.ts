@@ -14,13 +14,13 @@ describe('maybe type-validation', () => {
       primitivesChecks(maybeTest, {
         ...invalidPrimitives,
         string: true,
-        undefined: true,
+        undefinedValidation: true,
       })
 
       primitivesChecks(maybeNullTest, {
         ...invalidPrimitives,
         string: true,
-        undefined: true,
+        undefinedValidation: true,
         null: true,
       })
     })

@@ -7,7 +7,7 @@ import {
   maybeString,
   maybeSymbol,
   nullOrUndefined,
-  nullValidator,
+  nullValidation,
   number,
   string,
   symbol,
@@ -34,7 +34,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeStringTest, {
           ...invalidPrimitives,
           string: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -105,7 +105,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeNumberTest, {
           ...invalidPrimitives,
           number: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -176,7 +176,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeBoolTest, {
           ...invalidPrimitives,
           boolean: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -234,7 +234,7 @@ describe('primitive types validations', () => {
 
   describe('Given null type-validation', () => {
 
-    const nullTest = nullValidator
+    const nullTest = nullValidation
     const maybeNullTest = nullOrUndefined
 
     describe('When no reasons are expected', () => {
@@ -247,7 +247,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeNullTest, {
           ...invalidPrimitives,
           null: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -311,7 +311,7 @@ describe('primitive types validations', () => {
       it('Should validate only values of the correct type', () => {
         primitivesChecks(undefinedTest, {
           ...invalidPrimitives,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -367,7 +367,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeSymbolTest, {
           ...invalidPrimitives,
           symbol: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })
@@ -439,7 +439,7 @@ describe('primitive types validations', () => {
         primitivesChecks(maybeBigintTest, {
           ...invalidPrimitives,
           bigint: true,
-          undefined: true,
+          undefinedValidation: true,
         })
       })
     })

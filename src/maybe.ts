@@ -19,10 +19,10 @@ export type NullableType<T, WithNull extends boolean> = WithNull extends true
 * @param withNull A *falsie* value checks only for undefined besides the specified type-guard
 * @returns A validator that checks if a value is either of specified type or undefined
 */
-export function maybe<T extends TInput, TInput = any, TWithNull extends boolean = false>(
-  validator: AnyTypeValidation<T, TInput>,
+export function maybe<T, TWithNull extends boolean = false>(
+  validator: AnyTypeValidation<T>,
   withNull?: TWithNull
-): TypeValidation<NullableType<T, TWithNull>, NullableType<TInput, TWithNull>> {
+): TypeValidation<NullableType<T, TWithNull>> {
   const rejector = asRejectingValidator(validator)
   const baseType = typeName(validator)
   const nullType = withNull
@@ -32,7 +32,7 @@ export function maybe<T extends TInput, TInput = any, TWithNull extends boolean 
   const type = `?(${nullType})`
 
   return registerRejectingValidator(
-    (value: NullableType<TInput, TWithNull>, rejectionReasone?): value is NullableType<T, TWithNull> => {
+    (value: unknown, rejectionReasone?): value is NullableType<T, TWithNull> => {
       const rejections = rejectionReasone && arrayRejectionReasons()
 
       const result = value === undefined ||

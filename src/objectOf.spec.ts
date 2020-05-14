@@ -2,7 +2,7 @@ import { objectOf, ObjectValidations, TupleValidations } from './objectOf'
 import {
   bigint,
   boolean,
-  nullValidator,
+  nullValidation,
   number,
   string,
   symbol
@@ -111,7 +111,7 @@ describe('objectOf type-validation', () => {
           b: boolean,
           bi: bigint,
           sy: symbol,
-          nil: nullValidator,
+          nil: nullValidation,
         }
         const tupleValidations: TupleValidations<ValidatedTuple> = [
           string,
@@ -119,7 +119,7 @@ describe('objectOf type-validation', () => {
           boolean,
           bigint,
           symbol,
-          nullValidator,
+          nullValidation,
         ]
 
         const strictLong = objectOf(validations, { strict: true })

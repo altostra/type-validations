@@ -6,10 +6,10 @@ export const MAX_DISPLAYED_TYPES = 5
  * TS has problem to convert a func-to-boolean into a type-guard, and vice versa \
  * so whenever we want a user to be able to use either - use this type
  */
-export type AnyTypeValidation<T extends TInput, TInput = any> =
-  | ((item: TInput) => item is T)
-  | ((item: TInput) => boolean)
-  | TypeValidation<T, TInput>
+export type AnyTypeValidation<T> =
+  | ((item: unknown) => item is T)
+  | ((item: unknown) => boolean)
+  | TypeValidation<T>
 
 /**
 * Type validator that can validate values' types and have metadata and validation rejection reasons
@@ -21,41 +21,41 @@ export type AnyTypeValidation<T extends TInput, TInput = any> =
 * and **may be invoked multiple times**.
 * @returns `true` if **`item`** is valid as to the validated type; otherwise `false`.
 */
-export type TypeValidationFunc<T extends TInput, TInput = any> = (
-  item: TInput,
+export type TypeValidationFunc<T> = (
+  value: unknown,
   rejectionReasons?: (rejection: ValidationRejection) => void
-) => item is T
+) => value is T
 
 /**
  * Type validator that can validate values' types and have metadata and validation rejection reasons
- * @param item Value to validate
+ * @param value Value to validate
  * @param [rejectionReasons] Optional callback that would be called with validaton rejecton reasons.\
  * \
  * When validation succeeds - `rejectionReasons` would **not** be invoked.\
  * When validation fails - `rejectionReasons` would be invoked **at least once**,
  * and **may be invoked multiple times**.
- * @returns `true` if **`item`** is valid as to the validated type; otherwise `false`.
+ * @returns `true` if **`value`** is valid as to the validated type; otherwise `false`.
  */
-export interface TypeValidation<T extends TInput, TInput = any> extends TypeValidationFunc<T, TInput> {
+export interface TypeValidation<T> extends TypeValidationFunc<T> {
   /**A description of the validated type */
   [typeValidatorType]: string
   /**
    * Returns a predicate (no second arguemnt) for the specified validator
    * @returns A predicate (no second arguemnt) for the specified validator
    */
-  asPredicate(this: TypeValidation<T, TInput>): (val: TInput) => boolean
+  asPredicate(this: TypeValidation<T>): (val: unknown) => boolean
   /**
    * Returns a type-guard predicate (no second arguemnt) for the specified validator
    * @returns A type-guard predicate (no second arguemnt) for the specified validator
    */
-  asTypePredicate(this: TypeValidation<T, TInput>): (val: TInput) => val is T
+  asTypePredicate(this: TypeValidation<T>): (val: unknown) => val is T
 }
 
 /*
  * A type that convert a predicate (function to boolean) to a type-gaurd of a specified type
  */
-export type AsTypeValidation<T, TFunc extends (arg: any) => boolean> = TFunc extends (arg: infer TInput) => boolean
-  ? T extends TInput ? TypeValidation<T, TInput> : never // We won't this to fail if T and TInput are invalid
+export type AsTypeValidation<T, TFunc extends (arg: any) => boolean> = TFunc extends (arg: unknown) => boolean
+  ? TypeValidation<T>
   : never
 
 /**
@@ -69,7 +69,7 @@ export type ValidatorType<T extends AnyTypeValidation<unknown>> = T extends Type
   ? string
   : undefined
 
-export function typeOf<T extends AnyTypeValidation<unknown, any>>(validator: T): ValidatorType<T> {
+export function typeOf<T extends AnyTypeValidation<unknown>>(validator: T): ValidatorType<T> {
   return (isTypeValidation(validator)
     ? validator[typeValidatorType]
     : undefined) as ValidatorType<T>

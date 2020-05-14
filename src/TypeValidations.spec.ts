@@ -31,7 +31,7 @@ export function primitivesChecks(
   assertValidation(() => expect(fn(Symbol('sym')), 'symbol validation failure').to.be, 'symbol')
   assertValidation(() => expect(fn(BigInt(567)), 'bigint validation failure').to.be, 'bigint')
   assertValidation(() => expect(fn(null), 'null validation failure').to.be, 'null')
-  assertValidation(() => expect(fn(void 0), 'undefined validation failure').to.be, 'undefined')
+  assertValidation(() => expect(fn(void 0), 'undefined validation failure').to.be, 'undefinedValidation')
 
   function assertValidation(assertion: () => Chai.Assertion, primitive: Primitives) {
     if (valids[primitive] === undefined) {
@@ -53,7 +53,7 @@ export const invalidPrimitives: { [P in Primitives]?: boolean } = {
   number: false,
   string: false,
   symbol: false,
-  undefined: false,
+  undefinedValidation: false,
 }
 
 
@@ -174,18 +174,18 @@ describe('Type validations', () => {
 
     describe('When validating undefined', () => {
       it('Should validate a undefined', () => {
-        expect(primitives.undefined(undefined)).to.be.true
+        expect(primitives.undefinedValidation(undefined)).to.be.true
       })
 
       it('Should invalidate a non undefined', () => {
-        expect(primitives.undefined('hello')).to.be.false
-        expect(primitives.undefined(5)).to.be.false
-        expect(primitives.undefined(true)).to.be.false
-        expect(primitives.undefined(Symbol('a'))).to.be.false
-        expect(primitives.undefined({})).to.be.false
-        expect(primitives.undefined(['a'])).to.be.false
-        expect(primitives.undefined(BigInt(5))).to.be.false
-        expect(primitives.undefined(null)).to.be.false
+        expect(primitives.undefinedValidation('hello')).to.be.false
+        expect(primitives.undefinedValidation(5)).to.be.false
+        expect(primitives.undefinedValidation(true)).to.be.false
+        expect(primitives.undefinedValidation(Symbol('a'))).to.be.false
+        expect(primitives.undefinedValidation({})).to.be.false
+        expect(primitives.undefinedValidation(['a'])).to.be.false
+        expect(primitives.undefinedValidation(BigInt(5))).to.be.false
+        expect(primitives.undefinedValidation(null)).to.be.false
       })
     })
   })
@@ -311,7 +311,7 @@ describe('Type validations', () => {
 
   describe('When validating with combined validator', () => {
     describe('When validating with unified validator', () => {
-      const nullOrUndefined = anyOf(primitives.null, primitives.undefined)
+      const nullOrUndefined = anyOf(primitives.null, primitives.undefinedValidation)
 
       it('Should validate a undefined', () => {
         expect(nullOrUndefined(undefined)).to.be.true
@@ -466,14 +466,14 @@ describe('Type validations', () => {
       })
 
       it('Should invalidate anything else', () => {
-        expect(primitives.undefined('hello')).to.be.false
-        expect(primitives.undefined(5)).to.be.false
-        expect(primitives.undefined(true)).to.be.false
-        expect(primitives.undefined(Symbol('a'))).to.be.false
-        expect(primitives.undefined({})).to.be.false
-        expect(primitives.undefined(['a'])).to.be.false
-        expect(primitives.undefined(BigInt(5))).to.be.false
-        expect(primitives.undefined(null)).to.be.false
+        expect(primitives.undefinedValidation('hello')).to.be.false
+        expect(primitives.undefinedValidation(5)).to.be.false
+        expect(primitives.undefinedValidation(true)).to.be.false
+        expect(primitives.undefinedValidation(Symbol('a'))).to.be.false
+        expect(primitives.undefinedValidation({})).to.be.false
+        expect(primitives.undefinedValidation(['a'])).to.be.false
+        expect(primitives.undefinedValidation(BigInt(5))).to.be.false
+        expect(primitives.undefinedValidation(null)).to.be.false
       })
     })
   })

@@ -112,7 +112,7 @@ export function objectOf<T extends object>(
   ) as typeof propsValidation
 
   return registerRejectingValidator(
-    ((val: unknown, rejectionReasons?) => {
+    ((val: unknown, rejectionReasons?): val is T => {
       if (!isObject(val)) {
         rejectionReasons?.(createRejection(
           rejectionMessage`Value ${val} is not an object`,
@@ -161,7 +161,7 @@ export function objectOf<T extends object>(
             [pathKey(key)]
           ))
         })
-    }) as TypeValidation<T>,
+    }),
     type
   )
 }

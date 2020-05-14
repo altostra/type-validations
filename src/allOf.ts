@@ -10,14 +10,10 @@ import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
  * @param validation2 A type-guard
  * @returns A validator that checks that a value satisfies all the provided type-guards
  */
-export function allOf<
-  T1 extends TInput,
-  T2 extends TInput,
-  TInput = unknown
->(
-  validation1: AnyTypeValidation<T1, TInput>,
-  validation2: AnyTypeValidation<T2, TInput>
-): TypeValidation<T1 & T2, TInput>
+export function allOf<T1, T2>(
+  validation1: AnyTypeValidation<T1>,
+  validation2: AnyTypeValidation<T2>
+): TypeValidation<T1 & T2>
 /**
  * Creates a validator that checks that a value satisfies all the provided type-guards
  * @param validation1 A type-guard
@@ -25,16 +21,11 @@ export function allOf<
  * @param validation3 A type-guard
  * @returns A validator that checks that a value satisfies all the provided type-guards
  */
-export function allOf<
-  T1 extends TInput,
-  T2 extends TInput,
-  T3 extends TInput,
-  TInput = unknown
->(
-  validation1: AnyTypeValidation<T1, TInput>,
-  validation2: AnyTypeValidation<T2, TInput>,
-  validation3: AnyTypeValidation<T3, TInput>
-): TypeValidation<T1 & T2 & T3, TInput>
+export function allOf<T1, T2, T3>(
+  validation1: AnyTypeValidation<T1>,
+  validation2: AnyTypeValidation<T2>,
+  validation3: AnyTypeValidation<T3>
+): TypeValidation<T1 & T2 & T3>
 /**
  * Creates a validator that checks that a value satisfies all the provided type-guards
  * @param validation1 A type-guard
@@ -43,18 +34,12 @@ export function allOf<
  * @param validation4 A type-guard
  * @returns A validator that checks that a value satisfies all the provided type-guards
  */
-export function allOf<
-  T1 extends TInput,
-  T2 extends TInput,
-  T3 extends TInput,
-  T4 extends TInput,
-  TInput = unknown
->(
-  validation1: AnyTypeValidation<T1, TInput>,
-  validation2: AnyTypeValidation<T2, TInput>,
-  validation3: AnyTypeValidation<T3, TInput>,
-  validation4: AnyTypeValidation<T4, TInput>
-): TypeValidation<T1 & T2 & T3 & T4, TInput>
+export function allOf<T1, T2, T3, T4>(
+  validation1: AnyTypeValidation<T1>,
+  validation2: AnyTypeValidation<T2>,
+  validation3: AnyTypeValidation<T3>,
+  validation4: AnyTypeValidation<T4>
+): TypeValidation<T1 & T2 & T3 & T4>
 /**
  * Creates a validator that checks that a value satisfies all the provided type-guards
  * @param validation1 A type-guard
@@ -64,20 +49,13 @@ export function allOf<
  * @param validation5 A type-guard
  * @returns A validator that checks that a value satisfies all the provided type-guards
  */
-export function allOf<
-  T1 extends TInput,
-  T2 extends TInput,
-  T3 extends TInput,
-  T4 extends TInput,
-  T5 extends TInput,
-  TInput = unknown
->(
-  validation1: AnyTypeValidation<T1, TInput>,
-  validation2: AnyTypeValidation<T2, TInput>,
-  validation3: AnyTypeValidation<T3, TInput>,
-  validation4: AnyTypeValidation<T4, TInput>,
-  validation5: AnyTypeValidation<T5, TInput>
-): TypeValidation<T1 & T2 & T3 & T4 & T5, TInput>
+export function allOf<T1, T2, T3, T4, T5>(
+  validation1: AnyTypeValidation<T1>,
+  validation2: AnyTypeValidation<T2>,
+  validation3: AnyTypeValidation<T3>,
+  validation4: AnyTypeValidation<T4>,
+  validation5: AnyTypeValidation<T5>
+): TypeValidation<T1 & T2 & T3 & T4 & T5>
 /**
  * Creates a validator that checks that a value satisfies all the provided type-guards
  * @param validation1 A type-guard
@@ -88,28 +66,17 @@ export function allOf<
  * @param validation6 A type-guard
  * @returns A validator that checks that a value satisfies all the provided type-guards
  */
-export function allOf<
-  T1 extends TInput,
-  T2 extends TInput,
-  T3 extends TInput,
-  T4 extends TInput,
-  T5 extends TInput,
-  T6 extends TInput,
-  TInput = unknown
->(
-  validation1: AnyTypeValidation<T1, TInput>,
-  validation2: AnyTypeValidation<T2, TInput>,
-  validation3: AnyTypeValidation<T3, TInput>,
-  validation4: AnyTypeValidation<T4, TInput>,
-  validation5: AnyTypeValidation<T5, TInput>,
-  validation6: AnyTypeValidation<T6, TInput>
-): TypeValidation<T1 & T2 & T3 & T4 & T5 & T6, TInput>
-export function allOf<
-  T extends TInput,
-  TInput = unknown
->(
-  ...validations: AnyTypeValidation<T, TInput>[]
-): TypeValidation<T, TInput> {
+export function allOf<T1, T2, T3, T4, T5, T6>(
+  validation1: AnyTypeValidation<T1>,
+  validation2: AnyTypeValidation<T2>,
+  validation3: AnyTypeValidation<T3>,
+  validation4: AnyTypeValidation<T4>,
+  validation5: AnyTypeValidation<T5>,
+  validation6: AnyTypeValidation<T6>
+): TypeValidation<T1 & T2 & T3 & T4 & T5 & T6>
+export function allOf<T>(
+  ...validations: AnyTypeValidation<T>[]
+): TypeValidation<T> {
   const allTypes = validations
     .map(validatation => typeName(validatation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
@@ -127,12 +94,12 @@ export function allOf<
     )
 
   return registerRejectingValidator(
-    ((item: TInput, rejectionReasons?) => every(
+    ((item: unknown, rejectionReasons?): item is T => every(
       rejectingValidatons,
       validation => validation(
         item,
         rejectionReasons && (rejection => rejectionReasons(rejection))
-      ))) as TypeValidation<T, TInput>,
+      ))),
     type
   )
 }

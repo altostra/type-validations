@@ -50,20 +50,20 @@ export const typeValidatorType = Symbol('type')
  * @param f The function to check
  * @returns `true` if *`f`* is type-validator; otherwise, `false`.
  */
-export function isTypeValidation<T extends TInput, TInput = unknown>(
-  f: AnyTypeValidation<T, TInput>
-): f is TypeValidation<T, TInput> {
+export function isTypeValidation<T>(
+  f: AnyTypeValidation<T>
+): f is TypeValidation<T> {
   return typeof f === 'function' &&
     Object.prototype.hasOwnProperty.call(f, typeValidatorType)
 }
 
-const predicates = new WeakMap<TypeValidation<any, any>, (val: any) => boolean>()
+const predicates = new WeakMap<TypeValidation<any>, (val: any) => boolean>()
 
 /**
  * Returns a type-guard predicate (no second arguemnt) for the specified validator
  * @returns A type-guard predicate (no second arguemnt) for the specified validator
  */
-export function asPredicate<T extends TInput, TInput = any>(this: TypeValidation<T, TInput>): (val: TInput) => boolean {
+export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boolean {
   if (predicates.has(this)) {
     return predicates.get(this)!
   }
@@ -71,7 +71,7 @@ export function asPredicate<T extends TInput, TInput = any>(this: TypeValidation
   // To preserve function name
   const thisName = this.name
   const obj = {
-    [thisName]: (val: TInput) => this(val)
+    [thisName]: (val: unknown) => this(val)
   }
   const result = obj[thisName]
 

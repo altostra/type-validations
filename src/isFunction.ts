@@ -6,21 +6,57 @@ import {
   rejectionMessage
   } from './RejectionReasons'
 
+/**
+* Creates a type-validation that checks if a value is a function with
+* 0 arguemnt.
+* @param argsCount The expected `length` of the function being 0.
+* @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+* is a function with 0 arguments.
+*/
+export function isFunction(argsCount: 0): TypeValidation<(...args: any[]) => any>
+/**
+* Creates a type-validation that checks if a value is a function with
+* 1 arguemnt.
+* @param argsCount The expected `length` of the function being 1.
+* @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+* is a function with 1 arguments.
+*/
 export function isFunction(argsCount: 1): TypeValidation<(
   arg1: any,
   ...args: any[]
 ) => any>
+/**
+ * Creates a type-validation that checks if a value is a function with
+ * 2 arguemnts.
+ * @param argsCount The expected `length` of the function being 2.
+ * @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+ * is a function with 2 arguments.
+ */
 export function isFunction(argsCount: 2): TypeValidation<(
   arg1: any,
   arg2: any,
   ...args: any[]
 ) => any>
+/**
+ * Creates a type-validation that checks if a value is a function with
+ * 3 arguemnts.
+ * @param argsCount The expected `length` of the function being 3.
+ * @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+ * is a function with 3 arguments.
+ */
 export function isFunction(argsCount: 3): TypeValidation<(
   arg1: any,
   arg2: any,
   arg3: any,
   ...args: any[]
 ) => any>
+/**
+ * Creates a type-validation that checks if a value is a function with
+ * 4 arguemnts.
+ * @param argsCount The expected `length` of the function being 4.
+ * @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+ * is a function with 4 arguments.
+ */
 export function isFunction(argsCount: 4): TypeValidation<(
   arg1: any,
   arg2: any,
@@ -28,6 +64,13 @@ export function isFunction(argsCount: 4): TypeValidation<(
   arg4: any,
   ...args: any[]
 ) => any>
+/**
+ * Creates a type-validation that checks if a value is a function with
+ * 5 arguemnts.
+ * @param argsCount The expected `length` of the function being 5.
+ * @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+ * is a function with 5 arguments.
+ */
 export function isFunction(argsCount: 5): TypeValidation<(
   arg1: any,
   arg2: any,
@@ -36,6 +79,14 @@ export function isFunction(argsCount: 5): TypeValidation<(
   arg5: any,
   ...args: any[]
 ) => any>
+/**
+ * Creates a type-validation that checks if a value is a function with
+ * a specified length.
+ * @param argsCount The expected `length` of the function. \
+ * If `undefined` then any `length` is valid.
+ * @returns A `TypeValidaton<(...args: any[]) => any>` that checks if a given value
+ * is a function.
+ */
 export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) => any>
 export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) => any> {
   if (
@@ -51,7 +102,7 @@ export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) 
     : `(${functionArgs(argsCount ?? 0)}) => *`
 
   return registerRejectingValidator(
-    ((val, rejectionReasons?) => {
+    ((val, rejectionReasons?): val is ((...args: any[]) => any) => {
 
       if (typeof val !== 'function') {
         rejectionReasons?.(createRejection(
@@ -71,7 +122,7 @@ export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) 
       }
 
       return true
-    }) as TypeValidation<(...args: any[]) => any>,
+    }),
     funcType
   )
 }
