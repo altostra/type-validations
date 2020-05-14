@@ -9,7 +9,7 @@ export type Assertion<T extends TInput, TInput = unknown> =
   (val: TInput) => asserts val is T
 
 /**
- * Creates an assertion function from the provided validations
+ * Creates an assertion function from the provided validation
  * @param validation Type validation for type `T`
  * @param errFactory A function that produce error from rejections
  *
