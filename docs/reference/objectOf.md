@@ -8,6 +8,8 @@ are validated with the provided validations.
 ### `T` 
 The object type that the result *type-validation* would validate.
 
+**Extends:** `object`
+
 ## Parameters
 
 ### `propsValidation`
