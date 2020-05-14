@@ -82,16 +82,20 @@ function useBody(body: ExpectedType) { ... }
 
 #### Type parameters
 
-Name | Description
--|-
-`T` | The validated type of the provided *type-validation*.
+##### `T`
+The validated type of the provided *type-validation*.
 
 #### Parameters
 
-Name | Type | Desctiption
--|-|-
-`validation` | `AnyTypeValidation<T>` | *Type-validation* for the asserted type.
-`errFactory` | (val: unknown, rejetions: ValidationRejection[]) => unknown | A function that creates an error for a given value and rejections.
+##### `validation`
+*Type-validation* for the asserted type.
+
+**Type:** `AnyTypeValidation<T>`
+
+##### `errFactory`
+A function that creates an error for a given value and rejections.
+
+**Type:** (val: unknown, rejetions: ValidationRejection[]) => unknown
 
 #### Return value
 

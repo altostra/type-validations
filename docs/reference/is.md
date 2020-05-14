@@ -5,15 +5,15 @@ the provided value.
 
 ## Type parameters
 
-Name | Description
--|-
-`T` | The type of the provided value.
+### `T`
+The type of the provided value.
 
 ## Parameters
 
-Name | Type | Description
--|-|-
-`expectedValue` | `T` | The value which the result *type-validation* compares to.
+### `expectedValue`
+The value which the result *type-validation* compares to.
+
+**Type:** `T`
 
 ## Return value
 A `TypeValidation<T>` that validates that a given value is equal to `expectedValue`.

@@ -5,14 +5,14 @@ Type validations is a library for creating *type-validator*s: augmented
 that perform full runtime type-validation and let TypeScript type checker know what a 
 type may be in a certain context.
 
-## `TypeValidator<T>`
+## `TypeValidation<T>`
 
-The `TypeValidator<T>` interface is an augmented *type-guard* function, that is a
+The `TypeValidation<T>` interface is an augmented *type-guard* function, that is a
 function that returns 
 [*type predicate*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#using-type-predicates)
 for a given parameter.
 
-Beside of returning *type predicate*s, a `TypeValidator<T>`
+Beside of returning *type predicate*s, a `TypeValidation<T>`
 
  - may get a *rejections handler*:  
  A second parameter: a function which would be invoked with 
@@ -20,7 +20,36 @@ Beside of returning *type predicate*s, a `TypeValidator<T>`
 - is having a type: a `string` property that visually describes what the validator validates.
 - can be convertible to a simple (not augmented) *type-guard* or `boolean` function.
 
- ## Rejections
+### Parameters
+
+#### `value`
+Value to validate
+
+**Type:** `unknown`
+
+#### `rejectionReasons`
+Optional callback that would be called with validaton rejecton reasons.  
+
+- When validation succeeds - `rejectionReasons` would **not** be invoked.
+- When validation fails - `rejectionReasons` would be invoked **at least once**
+and **may be invoked multiple times**.
+
+### Properties
+
+#### Symbol: `[typeValidatorType]`
+A description of the validated type
+
+**Type:** `string`
+
+### Methods
+
+#### `asPredicate(): (value: unknown) => boolean`
+Returns a predicate (no second arguemnt) for the specified validator.
+
+#### `asPredicate(): (value: unknown) => value is T`
+Returns a type-guard predicate (no second arguemnt) for the specified validator.
+
+## Rejections
 
 A rejection is an object describing the reason a given value failed to pass the *type-validation*.
 

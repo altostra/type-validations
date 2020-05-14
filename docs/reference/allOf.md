@@ -10,15 +10,15 @@ are satisfied.
 
 ## Type parameters
 
-Name | Description
--|-
-`T1`, ..., `Tn` | The type parameters `T1`, ..., `Tn` corresponds to the types of the provided *type-validator*s.
+### `T1`, ..., `Tn`
+The type parameters `T1`, ..., `Tn` corresponds to the types of the provided *type-validator*s.
 
 ## Parameters
 
-Name | Type | Description
--|-|-
-`validation1`, ..., `validationn` | `AnyTypeValidation<Ti>` | One or more *type-validator*s, each of which validates one of the intersected types.
+### `validation1`, ..., `validationn`
+One or more *type-validator*s, each of which validates one of the intersected types.
+
+**Type:** `AnyTypeValidation<Ti>`
 
 ## Return value
 
