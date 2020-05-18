@@ -1,6 +1,11 @@
-name: Merge to master
+name: CI
 
 on:
+  pull_request:
+    paths:
+      - '.github/**'
+      - 'packages/**'
+      - 'package.json'
   push:
     branches:
       - master
@@ -13,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node_version: ['10.x', '12.x']
+        node_version: ['10.x', '12.x', '14.x']
         os: [ubuntu-latest, macOS-latest, windows-latest]
       fail-fast: true
 
