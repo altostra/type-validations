@@ -1,5 +1,7 @@
 # Type validations
 
+![CI](https://github.com/altostra/type-validations/workflows/CI/badge.svg)
+
 Type validations is a library for creating *type-validator*s: augmented 
 [*type-guard*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)s 
 that perform full runtime type-validation and let TypeScript type checker know what a 
