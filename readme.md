@@ -13,7 +13,7 @@ $ npm install @altostra/type-validations
 
 ## Reference
 
-A full reference can be found [here](./docs/reference/index).
+A full reference can be found [here](./docs/reference/index.md).
 
 ### [`allOf`](./docs/reference/docs/reference/allOf.md)
 

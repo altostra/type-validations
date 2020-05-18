@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Utility functions to create type-guards and assertions.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "mocha \"src/**/*.spec.ts\" --recursive",
     "build:clean": "rimraf lib",

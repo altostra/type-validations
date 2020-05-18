@@ -1,0 +1,4 @@
+**/*
+!lib/**/*
+lib/tests
+*.js.map
