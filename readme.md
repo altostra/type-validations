@@ -1,6 +1,7 @@
 # Type validations
 
 ![CI](https://github.com/altostra/type-validations/workflows/CI/badge.svg)
+[![npm version](https://badge.fury.io/js/%40altostra%2Ftype-validations.svg)](https://badge.fury.io/js/%40altostra%2Ftype-validations)
 
 Type validations is a library for creating *type-validator*s: augmented 
 [*type-guard*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)s 
