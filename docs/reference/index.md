@@ -67,27 +67,27 @@ Name | Type | Description
 
 ## Reference
 
-### [`allOf`](./allOf)
+### [`allOf`](./allOf.md)
 
 Creates *type-validator*s for an
 [*intersections-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#intersection-types)
 from a list of *type-validator*s.
 
-### [`anyOf`](./anyOf)
+### [`anyOf`](./anyOf.md)
 
 Creates *type-validator*s for a
 [*union-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#union-types)
 from a list of *type-validator*s.
 
-### [`arrayOf`](./arrayOf)
+### [`arrayOf`](./arrayOf.md)
 
 Given *type-guard* for type `T`, creates a *type-validator* for `T[]`.
 
-### [`assertBy`](./assertions)
+### [`assertBy`](./assertions.md)
 
 Create *assertion-functions* from *type-validation* and an error-factory.
 
-### [`enumOf`](./enumOf)
+### [`enumOf`](./enumOf.md)
 
 Creates a *type-validation* that checks if a value is one of the specified values
 (using strict equality).
@@ -97,44 +97,44 @@ Creates a *type-validation* that checks if a value is one of the specified value
 Creates a *type-validation* that only allows values that are strictly equal to 
 the provided value.
 
-### [`isEmptyArray`](./isEmptyArray)
+### [`isEmptyArray`](./isEmptyArray.md)
 
 A *type-validation* that checks if a value is an empty array.
 
-### [`isEmptyObject`](./isEmptyObject)
+### [`isEmptyObject`](./isEmptyObject.md)
 
 A *type-validation* that checks if a value is an empty object.
 
-### [`isFunction`](./isFunction)
+### [`isFunction`](./isFunction.md)
 
 Creates a *type-validation* that checks if a value is a function with a specified length.
 
-### [`maybe`](./maybe)
+### [`maybe`](./maybe.md)
 
 Creates a *type-validation* that checks if a value is of validated type, `undefined`, 
 and optionally `null`.
 
-### [`objectOf`](./objectOf)
+### [`objectOf`](./objectOf.md)
 
 Creates *type-validation* that checks if a value is an object that all its properties
 are validated with the provided validations.
 
-### [`recordOf`](./recordOf)
+### [`recordOf`](./recordOf.md)
 
 Creates *type-validator* that checks that a given value is an object and that
 all its properties are of a specific type.
 
-### [`singleOrArray`](./singleOrArray)
+### [`singleOrArray`](./singleOrArray.md)
 
 Creates a *type-validation* that checks if a value is either a specific type or an
 array of that type.
 
-### [`tupleOf`](./tupleOf)
+### [`tupleOf`](./tupleOf.md)
 
 Creates a *type-validation* that checks that an object is an array with a specific length,
 and has all the provided indices validated.
 
-### [Primitives](./primitives)
+### [Primitives](./primitives.md)
 
 #### *Type-validations*
 - `string`
