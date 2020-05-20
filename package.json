@@ -41,9 +41,9 @@
     "terser": "^4.6.13",
     "ts-node": "^8.10.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.9.2"
+    "typescript": "~3.9.3"
   },
   "dependencies": {
-    "@reactivex/ix-es2015-cjs": "^3.0.2"
+    "@reactivex/ix-es2015-cjs": "~3.0.2"
   }
 }
