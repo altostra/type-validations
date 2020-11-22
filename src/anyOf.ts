@@ -23,7 +23,7 @@ export type UnionOf<T> = T extends readonly [infer U, ...infer V]
 
 /**
  * Creates a validator that checks that a value is at-least one of the types guarded by the provided type-guards
- * @param validations Type guard to to check a value
+ * @param validations Type guards
  * @returns A validator that checks that a value is either of the types guarded by the provided type-guards
  */
 export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
