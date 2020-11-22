@@ -110,3 +110,10 @@ function fromEntriesPolyfill<TValues>(entries: Iterable<[Key, TValues]>): Record
 
   return result
 }
+
+/**
+ * Transforms a tuple of validations to tuple of the validated types
+ */
+export type ValidatedTypes<T> = T extends [AnyTypeValidation<infer U>, ...infer Rest]
+  ? [U, ...ValidatedTypes<Rest>]
+  : T

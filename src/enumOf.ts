@@ -1,60 +1,49 @@
-import { anyOf } from './anyOf'
-import { TypeValidation } from './Common'
+import { anyOf, UnionOf } from './anyOf'
+import { MAX_DISPLAYED_TYPES, TypeValidation } from './Common'
 import { is } from './is'
+import {
+  createRejection,
+  literal,
+  registerRejectingValidator,
+  rejectionMessage
+} from './RejectionReasons'
+import { typeOf } from './typeOf'
 
 /**
  * Creates a TypeValidator that validates that a value is one of specified values
- * @param val1 Enum value
- * @param val2 Enum value
+ * @param values The enumerated values
  * @returns A TypeValidator that validates that a value is one of specified values
  */
-export function enumOf<T1, T2>(val1: T1, val2: T2): TypeValidation<T1 | T2>
-/**
- * Creates a TypeValidator that validates that a value is one of specified values
- * @param val1 Enum value
- * @param val2 Enum value
- * @param val3 Enum value
- * @returns A TypeValidator that validates that a value is one of specified values
- */
-export function enumOf<T1, T2, T3>(val1: T1, val2: T2, val3: T3): TypeValidation<T1 | T2 | T3>
-/**
- * Creates a TypeValidator that validates that a value is one of specified values
- * @param val1 Enum value
- * @param val2 Enum value
- * @param val3 Enum value
- * @param val4 Enum value
- * @returns A TypeValidator that validates that a value is one of specified values
- */
-export function enumOf<T1, T2, T3, T4>(
-  val1: T1,
-  val2: T2,
-  val3: T3,
-  val4: T4
-): TypeValidation<T1 | T2 | T3 | T4>
-/**
- * Creates a TypeValidator that validates that a value is one of specified values
- * @param val1 Enum value
- * @param val2 Enum value
- * @param val3 Enum value
- * @param val4 Enum value
- * @param val5 Enum value
- * @returns A TypeValidator that validates that a value is one of specified values
- */
-export function enumOf<T1, T2, T3, T4, T5>(
-  val1: T1,
-  val2: T2,
-  val3: T3,
-  val4: T4,
-  val5: T5
-): TypeValidation<T1 | T2 | T3 | T4 | T5>
-/**
- * Creates a TypeValidator that validates that a value is one of specified values
- * @param values Values of the enumeration
- * @returns A TypeValidator that validates that a value is one of specified values
- */
-export function enumOf<T>(...values: T[]): TypeValidation<T>
-export function enumOf<T>(...values: T[]): TypeValidation<T> {
-  return anyOf(...values.map(is))
+export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<UnionOf<T>> {
+  const validValues = new Set(values)
+  const types = values.map(typeOf)
+
+  const typeParts = types.length <= MAX_DISPLAYED_TYPES
+    ? types
+    : [
+      ...types.slice(0, 2),
+      '...',
+      ...types.slice(types.length - 2, types.length)
+    ]
+
+  const type = typeParts.join(' | ')
+
+  return registerRejectingValidator(
+    (val, rejectionsHandler?): val is UnionOf<T> => {
+      const isValid = validValues.has(val)
+
+      if (!isValid && rejectionsHandler) {
+        rejectionsHandler(createRejection(
+          rejectionMessage`Value ${val} is not one of the valid values: ${literal(types.join(', '))}`,
+          type,
+        ))
+      }
+
+      return isValid
+    },
+    type
+  )
+  // return anyOf(...values.map(is))
 }
 
 export default enumOf

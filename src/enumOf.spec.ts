@@ -11,7 +11,7 @@ import {
   string,
   symbol,
   undefinedValidation
-  } from './primitives'
+} from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
 import { expect } from 'chai'
@@ -21,7 +21,7 @@ describe('enumOf type-validation', () => {
   const value1 = 1
   const value2 = 'str'
   const value3 = '2'
-  const enumOfTest = enumOf<1 | 'str' | '2'>(value1, value2, value3)
+  const enumOfTest = enumOf(...[value1, value2, value3] as const)
 
   describe('When no reasons are expected', () => {
     it('Should validate only values of the correct type', () => {
@@ -70,7 +70,7 @@ describe('enumOf type-validation', () => {
     it('Shoud call callback for all failure if values fails', () => {
       enumOfTest(true, callback)
 
-      expect(callback.callCount).to.be.equal(3)
+      expect(callback.callCount).to.be.equal(1)
     })
   })
 })

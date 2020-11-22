@@ -9,7 +9,7 @@ import {
   string,
   symbol,
   undefinedValidation
-  } from './primitives'
+} from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
 import { expect } from 'chai'
