@@ -5,7 +5,7 @@ import {
   Key,
   TypeValidation,
   TypeValidationFunc
-  } from './Common'
+} from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
@@ -238,7 +238,6 @@ export function arrayRejectionReasons(): ArrayRejectionReasons {
     pushRejection, {
     defineProperty: (_, prop, attr) => Reflect.defineProperty(rejections, prop, attr),
     deleteProperty: (_, prop) => Reflect.deleteProperty(rejections, prop),
-    enumerate: () => Reflect.enumerate(rejections) as any,
     get: (_, prop, receiver) => Reflect.get(rejections, prop, receiver),
     getOwnPropertyDescriptor: (_, prop) => ({
       ...Reflect.getOwnPropertyDescriptor(rejections, prop),
