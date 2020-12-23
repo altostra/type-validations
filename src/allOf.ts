@@ -3,7 +3,7 @@ import {
   MAX_DISPLAYED_TYPES,
   TypeValidation,
   ValidatedTypes
-} from './Common'
+  } from './Common'
 import { asRejectingValidator, registerRejectingValidator, typeName } from './RejectionReasons'
 import { every } from '@reactivex/ix-es2015-cjs/iterable/every'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
@@ -28,7 +28,20 @@ export type AllOfArgs = readonly [AnyTypeValidation<any>, ...AnyTypeValidation<a
  */
 export function allOf<T extends AllOfArgs>(
   ...validations: T
-): TypeValidation<IntersectionOf<ValidatedTypes<T>>> {
+): TypeValidation<IntersectionOf<ValidatedTypes<T>>>
+/**
+ * Creates a validator that checks that a value satisfies all the provided type-guards
+ * @param firstValidation A type validation
+ * @param validations Type validations
+ * @returns A validator that checks that a value satisfies all the provided type-guards
+ */
+export function allOf<T>(
+  firstValidation: AnyTypeValidation<T>,
+  ...validations: readonly AnyTypeValidation<T>[]
+): TypeValidation<T>
+export function allOf(
+  ...validations: AnyTypeValidation<any>[]
+): TypeValidation<IntersectionOf<ValidatedTypes<any>>> {
   const allTypes = validations
     .map(validatation => typeName(validatation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
@@ -46,7 +59,7 @@ export function allOf<T extends AllOfArgs>(
     )
 
   return registerRejectingValidator(
-    ((item: unknown, rejectionReasons?): item is IntersectionOf<ValidatedTypes<T>> => every(
+    ((item: unknown, rejectionReasons?): item is IntersectionOf<ValidatedTypes<any>> => every(
       rejectingValidatons,
       validation => validation(
         item,

@@ -6,7 +6,7 @@ import {
   literal,
   registerRejectingValidator,
   rejectionMessage
-} from './RejectionReasons'
+  } from './RejectionReasons'
 import { typeOf } from './typeOf'
 
 /**
@@ -14,6 +14,13 @@ import { typeOf } from './typeOf'
  * @param values The enumerated values
  * @returns A TypeValidator that validates that a value is one of specified values
  */
+export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<UnionOf<T>>
+/**
+ * Creates a TypeValidator that validates that a value is one of specified values
+ * @param values Values of the enumeration
+ * @returns A TypeValidator that validates that a value is one of specified values
+ */
+export function enumOf<T>(...values: readonly T[]): TypeValidation<T>
 export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<UnionOf<T>> {
   const validValues = new Set(values)
   const types = values.map(typeOf)
