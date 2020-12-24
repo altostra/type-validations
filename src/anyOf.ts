@@ -3,13 +3,13 @@ import {
   MAX_DISPLAYED_TYPES,
   TypeValidation,
   ValidatedTypes
-} from './Common'
+  } from './Common'
 import {
   asRejectingValidator,
   registerRejectingValidator,
   typeName,
   ValidationRejection
-} from './RejectionReasons'
+  } from './RejectionReasons'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
 import { some } from '@reactivex/ix-es2015-cjs/iterable/some'
@@ -26,6 +26,17 @@ export type UnionOf<T> = T extends readonly [infer U, ...infer V]
  * @param validations Type guards
  * @returns A validator that checks that a value is either of the types guarded by the provided type-guards
  */
+export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
+  ...validations: T
+): TypeValidation<UnionOf<ValidatedTypes<T>>>
+/**
+ * Creates a validator that checks that a value is either of the types guarded by the provided type-guards
+ * @param validations Type-guards
+ * @returns A validator that checks that a value is either of the types guarded by the provided type-guards
+ */
+export function anyOf<T>(
+  ...validations: readonly AnyTypeValidation<T>[]
+): TypeValidation<UnionOf<ValidatedTypes<T>>>
 export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
   ...validations: T
 ): TypeValidation<UnionOf<ValidatedTypes<T>>> {
