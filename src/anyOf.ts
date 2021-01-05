@@ -36,7 +36,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
  */
 export function anyOf<T>(
   ...validations: readonly AnyTypeValidation<T>[]
-): TypeValidation<UnionOf<ValidatedTypes<T>>>
+): TypeValidation<T>
 export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
   ...validations: T
 ): TypeValidation<UnionOf<ValidatedTypes<T>>> {
