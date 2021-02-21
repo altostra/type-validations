@@ -1,8 +1,8 @@
 import { AnyTypeValidation, TypeValidation } from './Common'
 import {
-  arrayRejectionReasons,
   asRejectingValidator,
   createRejection,
+  createRejectionsCollector,
   literal,
   registerRejectingValidator,
   rejectionMessage,
@@ -33,7 +33,7 @@ export function maybe<T, TWithNull extends boolean = false>(
 
   return registerRejectingValidator(
     (value: unknown, rejectionReasone?): value is NullableType<T, TWithNull> => {
-      const rejections = rejectionReasone && arrayRejectionReasons()
+      const rejections = rejectionReasone && createRejectionsCollector()
 
       const result = value === undefined ||
         (withNull && value === null) ||
