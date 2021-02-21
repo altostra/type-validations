@@ -244,7 +244,7 @@ export function createRejectionsCollector(): RejectionsCollector {
     rejections, {
     depth,
     ...options,
-    customInspect: true,
+    customInspect: false,
   })
 
   const specialMethod = {
