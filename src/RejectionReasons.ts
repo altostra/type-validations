@@ -5,12 +5,12 @@ import {
   Key,
   TypeValidation,
   TypeValidationFunc
-} from './Common'
+  } from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
 import { take } from '@reactivex/ix-es2015-cjs/iterable/operators/take'
-import { inspect } from 'util'
+import { inspect, InspectOptions } from 'util'
 
 /**
  * A description or why value didn't pass validations
@@ -222,36 +222,73 @@ export function createRejection(
 /**
  * A type that can be passed to type-validators, and is array of rejections.
  */
-export type ArrayRejectionReasons =
+export type RejectionsCollector =
   & ValidationRejection[]
   & ((rejection: ValidationRejection) => void)
+  & {
+    asArray: () => ValidationRejection[]
+  }
+
+export type ArrayRejectionReasons = RejectionsCollector
 
 /**
  * Creates an object that can be passed to type-validators, and is array of rejections.
  * @returns An object that can be passed to type-validators, and is array of rejections.
  */
-export function arrayRejectionReasons(): ArrayRejectionReasons {
-  const rejections: ArrayRejectionReasons = [] as any
-  const pushRejection = (rejection => void rejections.push(rejection)) as ArrayRejectionReasons
+export function createRejectionsCollector(): RejectionsCollector {
+  const rejections: RejectionsCollector = [] as any
+  const pushRejection = (rejection => void rejections.push(rejection)) as RejectionsCollector
+  const asArray = (): ValidationRejection[] => rejections
+    ;
+  (pushRejection as any)[inspect.custom] = (depth: number, options: InspectOptions) => inspect(
+    rejections, {
+    depth,
+    ...options,
+    customInspect: true,
+  })
+
+  const specialMethod = {
+    asArray,
+    toJSON: asArray,
+  }
+  const specialProps = new Set<string | symbol | number>(Object.keys(specialMethod))
 
   return new Proxy(
     pushRejection, {
-    defineProperty: (_, prop, attr) => Reflect.defineProperty(rejections, prop, attr),
-    deleteProperty: (_, prop) => Reflect.deleteProperty(rejections, prop),
-    get: (_, prop, receiver) => Reflect.get(rejections, prop, receiver),
-    getOwnPropertyDescriptor: (_, prop) => ({
-      ...Reflect.getOwnPropertyDescriptor(rejections, prop),
-      configurable: true,
-    }),
+    defineProperty: (_, prop, attr) => specialProps.has(prop)
+      ? false
+      : Reflect.defineProperty(rejections, prop, attr),
+    deleteProperty: (_, prop) => specialProps.has(prop)
+      ? false
+      : Reflect.deleteProperty(rejections, prop),
+    get: (_, prop, receiver) => specialProps.has(prop)
+      ? (specialMethod as any)[prop]
+      : Reflect.get(rejections, prop, receiver),
+    getOwnPropertyDescriptor: (_, prop) => specialProps.has(prop)
+      ? {
+        ...Reflect.getOwnPropertyDescriptor(specialMethod, prop),
+        configurable: false,
+      }
+      : {
+        ...Reflect.getOwnPropertyDescriptor(rejections, prop),
+        configurable: true,
+      },
     getPrototypeOf: () => Reflect.getPrototypeOf(rejections),
-    has: (_, prop) => Reflect.has(rejections, prop),
+    has: (_, prop) => specialProps.has(prop) || Reflect.has(rejections, prop),
     isExtensible: () => Reflect.isExtensible(rejections),
-    ownKeys: () => Reflect.ownKeys(rejections),
+    ownKeys: () => [
+      ...Reflect.ownKeys(rejections),
+      ...specialProps,
+    ],
     preventExtensions: () => Reflect.preventExtensions(rejections),
-    set: (_, prop, value) => Reflect.set(rejections, prop, value, rejections),
+    set: (_, prop, value) => specialProps.has(prop)
+      ? false
+      : Reflect.set(rejections, prop, value, rejections),
     setPrototypeOf: () => false,
   })
 }
+
+export const arrayRejectionReasons = createRejectionsCollector
 
 const indentRx = /^\s+/mg
 export function indent(str: undefined, indent: string): undefined

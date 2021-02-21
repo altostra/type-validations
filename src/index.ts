@@ -1,10 +1,10 @@
 
 export { AnyTypeValidation, TypeValidation } from './Common'
 export {
-  ArrayRejectionReasons,
+  RejectionsCollector as ArrayRejectionReasons,
   ValidationRejection,
   CUSTOM_TYPE,
-  arrayRejectionReasons,
+  createRejectionsCollector as arrayRejectionReasons,
   asPredicate,
   mapRejection,
   setValidatorRejection,
