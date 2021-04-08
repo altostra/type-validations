@@ -1,6 +1,6 @@
 {
   "name": "@altostra/type-validations",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Utility functions to create type-guards and assertions.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
