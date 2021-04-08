@@ -58,7 +58,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
 
   return registerRejectingValidator(
     ((item: unknown, rejectionReason?): item is UnionOf<ValidatedTypes<T>> => {
-      let rejections: ValidationRejection[] = []
+      const rejections: ValidationRejection[] = []
 
       const isValid = some(
         rejectingValidatons,
@@ -70,7 +70,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
       )
 
       if (!isValid && rejectionReason) {
-        rejections = rejections.sort((a, b) => a.path.length > b.path.length ? -1 : 1)
+        rejections.sort((a, b) => a.path.length > b.path.length ? -1 : 1)
         rejections.forEach(rejection => rejectionReason(rejection))
       }
 
