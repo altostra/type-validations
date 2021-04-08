@@ -70,7 +70,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
       )
 
       if (!isValid && rejectionReason) {
-        rejections.sort((a, b) => a.path.length > b.path.length ? -1 : 1)
+        rejections.sort((a, b) => b.path.length - a.path.length)
         rejections.forEach(rejection => rejectionReason(rejection))
       }
 
