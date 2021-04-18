@@ -10,13 +10,26 @@ The type of the properties of a validated object value.
 
 ## Parameters
 
-### `propsTypeValidation`
-The properties validator.
+### `validations`
+Value and optional key validation.
 
-**Type:** `AnyTypeValidation<T>`
+```ts
+interface RecordValidations<T, TKey extends string = string> {
+  /**
+   * Record properties validator
+   */
+  value: AnyTypeValidation<T>
+  /**
+   * Record property-keys validator
+   */
+  key?: AnyTypeValidation<TKey>
+}
+```
+
+**Type:** `RecordValidations<T, TKey extends string>`
 
 ## Return value
-A `TypeValidation<Record<string | number, T>>`
+A `TypeValidation<Record<TKey, T>>`
 
 ## Example
 
@@ -24,7 +37,7 @@ A `TypeValidation<Record<string | number, T>>`
 import { recordOf, typeValidatorType } from '@altostra/type-validations'
 import { number } from '@altostra/type-validations/lib/primitives'
 
-const isNumericRecord = recordOf(number)
+const isNumericRecord = recordOf({ value: number })
 
 console.log(isNumericRecord[typeValidatorType]) // { [*]: number }
 
