@@ -5,7 +5,7 @@ import {
   Key,
   TypeValidation,
   TypeValidationFunc
-  } from './Common'
+} from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
@@ -251,7 +251,7 @@ export function createRejectionsCollector(): RejectionsCollector {
     asArray,
     toJSON: asArray,
   }
-  const specialProps = new Set<string | symbol | number>(Object.keys(specialMethod))
+  const specialProps = new Set<string | symbol>(Object.keys(specialMethod))
 
   return new Proxy(
     pushRejection, {
