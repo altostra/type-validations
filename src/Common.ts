@@ -117,3 +117,5 @@ function fromEntriesPolyfill<TValues>(entries: Iterable<[Key, TValues]>): Record
 export type ValidatedTypes<T> = T extends [AnyTypeValidation<infer U>, ...infer Rest]
   ? [U, ...ValidatedTypes<Rest>]
   : T
+
+export type NotEmptyArray<T> =readonly [T, ...T[]]

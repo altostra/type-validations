@@ -5,7 +5,7 @@ import {
   Key,
   TypeValidation,
   TypeValidationFunc
-} from './Common'
+  } from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
@@ -153,7 +153,7 @@ export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeVa
 
   // To preserve function name
   const functionName = validator.name
-  const obj = {
+  const { [functionName]: result } = {
     [functionName]: ((
       value: unknown,
       rejectionReasons?: (rejection: ValidationRejection) => void
@@ -179,7 +179,6 @@ export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeVa
     }) as TypeValidation<T>
   }
 
-  const result = obj[functionName]
   return registerRejectingValidator(result, typeName(result))
 }
 
