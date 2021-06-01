@@ -48,7 +48,7 @@ export type MapOrObjectSpec<
   ? TaggedUnionSpec<TKey, TTag, TUnion>
   : TaggedUnionSpecMap<TKey, TTag, TUnion>
 
-export default function taggedUnionOf<
+export function taggedUnionOf<
   TKey extends string,
   TTag,
   TUnion extends TaggedUnion<TKey, TTag>
@@ -92,6 +92,8 @@ export default function taggedUnionOf<
 
   return result
 }
+
+export default taggedUnionOf
 
 type ResolvedTaggedUnionSpecMap<
   TKey extends string,
