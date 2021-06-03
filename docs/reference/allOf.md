@@ -1,7 +1,7 @@
 # `allOf`
 
 Creates *type-validator*s for an
-[*intersections-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#intersection-types)
+[*intersections-type*](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)
 from a list of *type-validator*s.
 
 Given a list of *type-validator*s (each validates specific type), `allOf` creates a 
