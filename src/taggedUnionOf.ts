@@ -8,6 +8,7 @@ import {
 import {
   asRejectingValidator,
   createRejection,
+  literal,
   registerRejectingValidator,
   rejectionMessage
   } from './RejectionReasons'
@@ -48,8 +49,39 @@ export type MapOrObjectSpec<
   ? TaggedUnionSpec<TUnion, TKey, TTag>
   : TaggedUnionSpecMap<TUnion, TKey, TTag>
 
+export type SpecUnion<T> = T extends TaggedUnionSpec<infer TUnion, any, any>
+  ? TUnion
+  : never
+export type SpecTags<T> = T extends TaggedUnionSpec<any, any, infer TTag>
+  ? TTag
+  : never
 
+export type CombinedUnions<T> = T extends TaggedUnionSpec<any, any, any>[]
+  ? (T extends [infer TFirst, ...infer TRest]
+    ? SpecUnion<TFirst> | CombinedUnions<TRest>
+    : never)
+  : never
 
+export type CombinedTags<T> = T extends TaggedUnionSpec<any, any, any>[]
+  ? (T extends [infer TFirst, ...infer TRest]
+    ? SpecTags<TFirst> | CombinedTags<TRest>
+    : never)
+  : never
+
+export function taggedUnionOf<
+  TKey extends string,
+  TSpecs extends NotEmptyArray<TaggedUnionSpec<any, TKey, keyof any>>
+>(
+  tagKey: TKey,
+  ...specs: TSpecs
+): TaggedUnionValidation<CombinedUnions<TSpecs>, TKey, CombinedTags<TSpecs>>
+export function taggedUnionOf<
+  TKey extends string,
+  TSpecs extends NotEmptyArray<TaggedUnionSpecMap<any, TKey, keyof any>>,
+  >(
+    tagKey: TKey,
+    ...specs: TSpecs
+  ): TaggedUnionValidation<CombinedUnions<TSpecs>, TKey, CombinedTags<TSpecs>>
 export function taggedUnionOf<
   TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
@@ -101,7 +133,11 @@ export function taggedUnionOf<
 
       const validation = specMap.get(tag as any)!
 
-      return validation(val, rejections)
+      return validation(val, rejections && (({ reason, ...data }) => rejections({
+        ...data,
+        reason: rejectionMessage`Validation for tag ${tag} failed:
+${literal(reason)}`
+      })))
     },
     type
   ) as TaggedUnionValidation<TUnion, TKey, TTag>
