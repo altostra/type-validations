@@ -20,42 +20,60 @@ export type TaggedUnion<TKey extends string, TTags> = {
 }
 
 export type TaggedUnionSpecMap<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
   > = Map<TTag, AnyTypeValidation<TUnion>>
 export type TaggedUnionSpecObject<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag extends keyof any,
-  TUnion extends TaggedUnion<TKey, TTag>
   > = {
     [K in TTag]: AnyTypeValidation<TUnion>
   }
 
 export type TaggedUnionSpec<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag extends keyof any,
-  TUnion extends TaggedUnion<TKey, TTag>
   > =
-  | TaggedUnionSpecMap<TKey, TTag, TUnion>
-  | TaggedUnionSpecObject<TKey, TTag, TUnion>
+  | TaggedUnionSpecMap<TUnion, TKey, TTag>
+  | TaggedUnionSpecObject<TUnion, TKey, TTag>
 
 export type MapOrObjectSpec<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
   > = TTag extends keyof any
-  ? TaggedUnionSpec<TKey, TTag, TUnion>
-  : TaggedUnionSpecMap<TKey, TTag, TUnion>
+  ? TaggedUnionSpec<TUnion, TKey, TTag>
+  : TaggedUnionSpecMap<TUnion, TKey, TTag>
+
+
 
 export function taggedUnionOf<
+  TUnion extends TaggedUnion<TKey, TTag>,
+  TKey extends string,
+  TTag extends keyof any,
+  >(
+    tagKey: TKey,
+    ...specs: NotEmptyArray<TaggedUnionSpec<TUnion, TKey, TTag>>
+  ): TaggedUnionValidation<TUnion, TKey, TTag>
+export function taggedUnionOf<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
->(
-  tagKey: TKey,
-  ...specs: NotEmptyArray<MapOrObjectSpec<TKey, TTag, TUnion>>
-): TypeValidation<TUnion> {
+  >(
+    tagKey: TKey,
+    ...specs: NotEmptyArray<TaggedUnionSpecMap<TUnion, TKey, TTag>>
+  ): TaggedUnionValidation<TUnion, TKey, TTag>
+export function taggedUnionOf<
+  TUnion extends TaggedUnion<TKey, TTag>,
+  TKey extends string,
+  TTag,
+  >(
+    tagKey: TKey,
+    ...specs: NotEmptyArray<MapOrObjectSpec<TUnion, TKey, TTag>>
+  ): TaggedUnionValidation<TUnion, TKey, TTag> {
   const specMap = specAsMap(specs)
   const type = anyOfType([...specMap.values()])
 
@@ -86,7 +104,7 @@ export function taggedUnionOf<
       return validation(val, rejections)
     },
     type
-  ) as TaggedUnionValidation<TKey, TTag, TUnion>
+  ) as TaggedUnionValidation<TUnion, TKey, TTag>
 
   result.unionSpec = () => specMap
 
@@ -96,24 +114,24 @@ export function taggedUnionOf<
 export default taggedUnionOf
 
 type ResolvedTaggedUnionSpecMap<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
   > = Map<TTag, TypeValidation<TUnion>>
 
 function specAsMap<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
->(
-  specs: NotEmptyArray<MapOrObjectSpec<TKey, TTag, TUnion>>
-): ResolvedTaggedUnionSpecMap<TKey, TTag, TUnion> {
+  >(
+    specs: NotEmptyArray<MapOrObjectSpec<TUnion, TKey, TTag>>
+  ): ResolvedTaggedUnionSpecMap<TUnion, TKey, TTag> {
   return new Map(from(specs).pipe(
     flatMap(singleSpecEntries)
   ))
 
   function singleSpecEntries(
-    spec: MapOrObjectSpec<TKey, TTag, TUnion>
+    spec: MapOrObjectSpec<TUnion, TKey, TTag>
   ): Iterable<[TTag, TypeValidation<TUnion>]> {
     return from((spec instanceof Map
       ? spec.entries()
@@ -124,9 +142,9 @@ function specAsMap<
 }
 
 export interface TaggedUnionValidation<
+  TUnion extends TaggedUnion<TKey, TTag>,
   TKey extends string,
   TTag,
-  TUnion extends TaggedUnion<TKey, TTag>
   > extends TypeValidation<TUnion> {
-  unionSpec(): TaggedUnionSpecMap<TKey, TTag, TUnion>
+  unionSpec(): TaggedUnionSpecMap<TUnion, TKey, TTag>
 }
