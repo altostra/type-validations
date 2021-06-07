@@ -1,7 +1,7 @@
 # Type validations
 
 Type validations is a library for creating *type-validator*s: augmented 
-[*type-guard*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)s 
+[*type-guard*](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)s 
 that perform full runtime type-validation and let TypeScript type checker know what a 
 type may be in a certain context.
 
@@ -9,7 +9,7 @@ type may be in a certain context.
 
 The `TypeValidation<T>` interface is an augmented *type-guard* function, that is a
 function that returns 
-[*type predicate*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#using-type-predicates)
+[*type predicate*](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
 for a given parameter.
 
 Beside of returning *type predicate*s, a `TypeValidation<T>`
@@ -70,13 +70,13 @@ Name | Type | Description
 ### [`allOf`](./allOf.md)
 
 Creates *type-validator*s for an
-[*intersections-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#intersection-types)
+[*intersections-type*](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)
 from a list of *type-validator*s.
 
 ### [`anyOf`](./anyOf.md)
 
 Creates *type-validator*s for a
-[*union-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#union-types)
+[*union-type*](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
 from a list of *type-validator*s.
 
 ### [`arrayOf`](./arrayOf.md)
@@ -128,6 +128,13 @@ all its properties are of a specific type.
 
 Creates a *type-validation* that checks if a value is either a specific type or an
 array of that type.
+
+### [`taggedUnionOf`](./taggedUnionOf.md)
+
+Creates *type-validator*s for a
+[*union-type*](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
+from a mapping between specified tag property values and validators, when the *union-type* 
+is in fact a [*discriminated union*](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions).
 
 ### [`tupleOf`](./tupleOf.md)
 

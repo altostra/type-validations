@@ -4,7 +4,7 @@
 [![npm version](https://badge.fury.io/js/%40altostra%2Ftype-validations.svg)](https://badge.fury.io/js/%40altostra%2Ftype-validations)
 
 Type validations is a library for creating *type-validator*s: augmented 
-[*type-guard*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)s 
+[*type-guard*](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)s 
 that perform full runtime type-validation and let TypeScript type checker know what a 
 type may be in a certain context.
 
@@ -21,13 +21,13 @@ A full reference can be found [here](./docs/reference/index.md).
 ### [`allOf`](./docs/reference/docs/reference/allOf.md)
 
 Creates *type-validator*s for an
-[*intersections-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#intersection-types)
+[*intersections-type*](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)
 from a list of *type-validator*s.
 
 ### [`anyOf`](./docs/reference/anyOf.md)
 
 Creates *type-validator*s for a
-[*union-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#union-types)
+[*union-type*](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
 from a list of *type-validator*s.
 
 ### [`arrayOf`](./docs/reference/arrayOf.md)
@@ -79,6 +79,13 @@ all its properties are of a specific type.
 
 Creates a *type-validation* that checks if a value is either a specific type or an
 array of that type.
+
+### [`taggedUnionOf`](./docs/reference/taggedUnionOf.md)
+
+Creates *type-validator*s for a
+[*union-type*](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
+from a mapping between specified tag property values and validators, when the *union-type* 
+is in fact a [*discriminated union*](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions).
 
 ### [`tupleOf`](./docs/reference/tupleOf.md)
 

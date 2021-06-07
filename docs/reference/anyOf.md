@@ -1,7 +1,7 @@
 # `anyOf`
 
 Creates *type-validator*s for a
-[*union-type*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#union-types)
+[*union-type*](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
 from a list of *type-validator*s.
 
 Given a list of *type-validator*s (each validates specific type), `anyOf` creates a 
