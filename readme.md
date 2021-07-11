@@ -1,5 +1,6 @@
 # Type validations
 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 ![CI](https://github.com/altostra/type-validations/workflows/CI/badge.svg)
 [![npm version](https://badge.fury.io/js/%40altostra%2Ftype-validations.svg)](https://badge.fury.io/js/%40altostra%2Ftype-validations)
 
