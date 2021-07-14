@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+
+export ALTO_CI_PR_TITLE=''
+PR_NUM="$( (git log -n 1 | \
+grep '^[[:space:]]*Merge pull request #[[:digit:]]\+' | \
+sed 's/^[^#]*#\([[:digit:]]\+\)[^[:digit:]].*$/\1/') ||
+echo '' )"
+
+if [ -z "$PR_NUM" ]; then
+    echo 'Failed to get last PR title.
+Please make sure the latest commit is merge from a pull-request'
+
+    exit 1
+fi
+
+ALTO_CI_PR_TITLE="$(
+    gh pr view "$PR_NUM" | \
+    grep '^title:' | \
+    sed 's/^title:[[:space:]]*//'
+)"
+export ALTO_CI_PR_TITLE
+
+echo Latest PR title: "$ALTO_CI_PR_TITLE"

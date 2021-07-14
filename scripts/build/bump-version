@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE=$(dirname "${BASH_SOURCE[0]}")
+
+function is_dirty() {
+    if [ -n "$(git diff --stat)"  ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# shellcheck source=./get-version-bump-type
+source "$HERE"/get-version-bump-type
+BUMP="$ALTO_CI_VERSION_BUMP"
+
+if [ -z "$BUMP" ]; then
+    echo 'Cannot bump version.
+Either the last commit is not a PR merge or the merged PR title has not version bump suffix.
+In order to enable automatic version bump, suffix your PR title with either:
+#patch
+#minor
+#major'
+
+    exit 1
+fi
+
+echo "Bumping $BUMP version..."
+
+if is_dirty; then
+    echo "Repository is dirty.
+Cannot bump version.
+
+Only clean repository after merge from PR can bump version"
+
+    exit 1
+fi
+
+echo 'Bumping version'
+npm version --git-tag-version=false "$BUMP"
+git add .
+git commit -m "v$(jq -r .version package.json)
+"'[skip ci]'
+git push --force
+
+echo Publishing new version
+npm publish

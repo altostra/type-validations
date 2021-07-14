@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE=$(dirname "${BASH_SOURCE[0]}")
+export ALTO_CI_VERSION_BUMP=''
+
+# shellcheck source=./get-last-pr-name
+source "$HERE"/get-last-pr-name
+LAST_PR_TITLE="$ALTO_CI_PR_TITLE"
+
+if [ -z "$LAST_PR_TITLE" ]; then
+    echo 'Failed to get last PR title.
+Please make sure the latest commit is merge from a pull-request'
+
+    exit 1
+fi
+
+if ! grep '#\(patch\|minor\|major\)' <<< "$LAST_PR_TITLE" > /dev/null; then
+    echo 'Last PR has no version bump specified in its title.
+In order to automatically bump version after merging PR, suffix its title with either #patch #minor or #major'
+
+    exit 1
+fi
+
+ALTO_CI_VERSION_BUMP="$(
+    # shellcheck disable=SC2001
+    echo "$LAST_PR_TITLE" | \
+    sed 's/^.*#\(patch\|minor\|major\)$/\1/'
+)"
+export ALTO_CI_VERSION_BUMP
