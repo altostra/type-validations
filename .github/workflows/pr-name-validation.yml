@@ -1,0 +1,34 @@
+name: PR-name-validation
+
+on:
+  pull_request:
+    types:
+      - 'opened'
+      - 'reopened'
+      - 'edited'
+      - 'labeled'
+      - 'ready_for_review'
+      - 'synchronize'
+
+jobs:
+  name-validation:
+    name: PR name validation
+
+    if: "${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}"
+
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+      fail-fast: true
+
+    steps:
+      - name: Validate PR title
+        run: |
+          echo "Checking $PR_NAME"
+          echo "$PR_NAME" | grep -e '#\(patch\|minor\|major\)$' > /dev/null || \
+          (echo "PR title must end with either #patch, #minor or #major" && false)
