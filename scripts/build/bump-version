@@ -41,9 +41,11 @@ fi
 echo 'Bumping version'
 npm version --git-tag-version=false "$BUMP"
 git add .
-git commit -m "v$(jq -r .version package.json)
+VER="v$(jq -r .version package.json)"
+git commit -m "$VER
 "'[skip ci]'
-git push --force
+git tag -a "$VER" -m "$VER"
+git push --force --follow-tags
 
 echo Publishing new version
 npm publish
