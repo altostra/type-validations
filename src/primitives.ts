@@ -11,7 +11,7 @@ import {
 import type { FromTypeOf, JsType } from './JSTypes'
 
 function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTypeOf<T>> {
-  return registerRejectingValidator(
+  const result: TypeValidation<FromTypeOf<T>> = registerRejectingValidator(
     ((val, rejectionReason?): val is FromTypeOf<T> => {
       if (typeof val === type) {
         return true
@@ -23,8 +23,11 @@ function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTyp
 
       return false
     }),
-    type
+    type,
+    () => result
   )
+
+  return result
 }
 
 export type ErrFactory = (val: unknown, rejections: ValidationRejection[]) => any
@@ -59,7 +62,7 @@ export function booleanAssertion(errFactory: ErrFactory): Assertion<boolean> {
 /**
  * Validates that the parameter is a null
  */
-export const nullValidation = registerRejectingValidator(
+export const nullValidation: TypeValidation<null> = registerRejectingValidator(
   ((x: unknown, rejectionReason?): x is null => {
     if (x === null) {
       return true
@@ -72,7 +75,8 @@ export const nullValidation = registerRejectingValidator(
 
     return false
   }),
-  'null'
+  'null',
+  () => nullValidation
 )
 export { nullValidation as null }
 
@@ -110,9 +114,10 @@ export function bigintAssertion(errFactory: ErrFactory): Assertion<bigint> {
 /**
  * Validates any parameter
  */
-export const any = registerRejectingValidator(
+export const any: TypeValidation<any> = registerRejectingValidator(
   ((x: unknown): x is any => true),
-  '*'
+  '*',
+  () => any
 )
 export function anyAssertion(errFactory?: ErrFactory): Assertion<any> {
   return () => { }
@@ -129,7 +134,7 @@ export const unknownAssertion: (errFactory?: ErrFactory) => Assertion<unknown> =
  *
  * Invalidates any parameter
  */
-export const never = registerRejectingValidator(
+export const never: TypeValidation<never> = registerRejectingValidator(
   ((val, rejectedReason?): val is never => {
     rejectedReason?.(createRejection(
       rejectionMessage`Value ${val} exists therefor is not 'never'.`,
@@ -138,7 +143,8 @@ export const never = registerRejectingValidator(
 
     return false
   }),
-  'X (never)'
+  'X (never)',
+  () => never
 )
 
 export function assert(errFactory: ErrFactory): Assertion<never> {

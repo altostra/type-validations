@@ -26,6 +26,8 @@ export type TypeValidationFunc<T> = (
   rejectionReasons?: (rejection: ValidationRejection) => void
 ) => value is T
 
+export const transformValidation = Symbol('transform')
+
 /**
  * Type validator that can validate values' types and have metadata and validation rejection reasons
  * @param value Value to validate
@@ -49,6 +51,7 @@ export interface TypeValidation<T> extends TypeValidationFunc<T> {
    * @returns A type-guard predicate (no second argument) for the specified validator
    */
   asTypePredicate(this: TypeValidation<T>): (val: unknown) => val is T
+  [transformValidation]: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 }
 
 /*

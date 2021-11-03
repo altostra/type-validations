@@ -1,4 +1,4 @@
-import { AnyTypeValidation, TypeValidation } from './Common'
+import { AnyTypeValidation, transformValidation, TypeValidation } from './Common'
 import {
   asRejectingValidator,
   createRejection,
@@ -16,7 +16,7 @@ export function arrayOf<T>(
   elementTypeValidation: AnyTypeValidation<T>
 ): TypeValidation<T[]> {
   const type = `ArrayOf(${typeName(elementTypeValidation)})`
-  elementTypeValidation = asRejectingValidator(elementTypeValidation)
+  const validation = asRejectingValidator(elementTypeValidation)
 
   return registerRejectingValidator(
     ((val: unknown, rejectionReasons?): val is T[] => {
@@ -29,7 +29,7 @@ export function arrayOf<T>(
         return false
       }
 
-      return val.every((item, index) => elementTypeValidation(
+      return val.every((item, index) => validation(
         item,
         rejectionReasons && (rejection => {
           rejection.path.push(index)
@@ -38,7 +38,8 @@ export function arrayOf<T>(
         })
       ))
     }),
-    type
+    type,
+    (transform, args) => arrayOf(validation[transformValidation](transform, args))
   )
 }
 

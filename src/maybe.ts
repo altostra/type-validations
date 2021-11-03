@@ -1,4 +1,4 @@
-import { AnyTypeValidation, TypeValidation } from './Common'
+import { AnyTypeValidation, transformValidation, TypeValidation } from './Common'
 import {
   asRejectingValidator,
   createRejection,
@@ -52,7 +52,11 @@ export function maybe<T, TWithNull extends boolean = false>(
 
       return result
     },
-    type
+    type,
+    (transformation, args) => maybe(
+      rejector[transformValidation](transformation, args),
+      withNull
+    )
   )
 }
 

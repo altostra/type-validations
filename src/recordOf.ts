@@ -2,8 +2,9 @@ import {
   AnyTypeValidation,
   isObject,
   pathKey,
+  transformValidation,
   TypeValidation
-} from './Common'
+  } from './Common'
 import {
   asRejectingValidator,
   createRejection,
@@ -12,7 +13,7 @@ import {
   registerRejectingValidator,
   rejectionMessage,
   typeName
-} from './RejectionReasons'
+  } from './RejectionReasons'
 
 /**
  * Validators specification for `recordOf` validation.
@@ -62,7 +63,7 @@ export function recordOf<T, TKey extends string = string>(
     ? typeName(keysTypeValidation)
     : '*'
   const type = `{ [${keyTypeName}]: ${indent(typeName(propsTypeValidation), '  ')} }`
-  propsTypeValidation = asRejectingValidator(propsTypeValidation)
+  const propsValidation = asRejectingValidator(propsTypeValidation)
   const keysValidation = keysTypeValidation && asRejectingValidator(keysTypeValidation)
 
   return registerRejectingValidator(
@@ -85,7 +86,7 @@ export function recordOf<T, TKey extends string = string>(
               reason: rejectionMessage`Invalid record key ${key}: ${literal(rejection.reason)}`,
             })))
           )) &&
-          propsTypeValidation(
+          propsValidation(
             recordValue,
             rejectionReasons && (rejection => {
               rejection.path.push(pathKey(key))
@@ -94,7 +95,11 @@ export function recordOf<T, TKey extends string = string>(
             })
           ))
     }),
-    type
+    type,
+    (transformation, args) => recordOf({
+      value: propsValidation[transformValidation](transformation, args),
+      key: keysValidation?.[transformValidation](transformation, args),
+    })
   )
 }
 

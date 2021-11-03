@@ -5,6 +5,7 @@ import {
   Key,
   MAX_DISPLAYED_TYPES,
   pathKey,
+  transformValidation,
   TypeValidation
   } from './Common'
 import is from './is'
@@ -114,11 +115,12 @@ export function objectOf<T extends object>(
   ${validationTypes.join(',\n  ')}
 }`
 
-  propsValidation = fromEntries(
-    validationEntries.map(([key, validation]) => [key, asRejectingValidator(validation)])
-  ) as typeof propsValidation
+  const rejectorsEntries = validationEntries.map(([key, validation]) =>
+    [key, asRejectingValidator(validation)] as [string, TypeValidation<any>])
 
-  return registerRejectingValidator(
+  propsValidation = fromEntries(rejectorsEntries) as typeof propsValidation
+
+  const result: TypeValidation<T> = registerRejectingValidator(
     ((val: unknown, rejectionReasons?): val is T => {
       if (!isObject(val)) {
         rejectionReasons?.(createRejection(
@@ -169,8 +171,25 @@ export function objectOf<T extends object>(
           ))
         })
     }),
-    type
+    type,
+    (transformation, args) => {
+      const transformedValidators: typeof rejectorsEntries = rejectorsEntries.map(([key, validation]) =>
+        [key, validation[transformValidation](transformation, args)])
+
+      // Remove length validation from explicit validator (it would be re-added)
+      if (isTuple && strict) {
+        transformedValidators.pop()
+      }
+
+      const objectOfValidators: typeof propsValidation = isTuple
+        ? transformedValidators.map(([, validation]) => validation)
+        : fromEntries(transformedValidators) as any
+
+      return objectOf(objectOfValidators, { strict })
+    }
   )
+
+  return result
 }
 
 export default objectOf

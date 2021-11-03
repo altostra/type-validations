@@ -1,6 +1,7 @@
 import {
   AnyTypeValidation,
   MAX_DISPLAYED_TYPES,
+  transformValidation,
   TypeValidation,
   ValidatedTypes
   } from './Common'
@@ -67,7 +68,12 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
 
       return isValid
     }),
-    type
+    type,
+    (transformation, args) => anyOf(
+      ...rejectingValidations.pipe(
+        map(validation => validation[transformValidation](transformation, args))
+      )
+    )
   )
 }
 

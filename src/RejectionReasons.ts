@@ -3,6 +3,7 @@ import {
   fromEntries,
   isObject,
   Key,
+  transformValidation,
   TypeValidation,
   TypeValidationFunc
   } from './Common'
@@ -90,12 +91,14 @@ export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boole
  */
 export function registerRejectingValidator<T>(
   validator: TypeValidationFunc<T>,
-  type: string
+  type: string,
+  transform: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 ): TypeValidation<T> {
   Object.assign(validator, {
     [typeValidatorType]: type,
     asPredicate,
     asTypePredicate: asPredicate,
+    [transformValidation]: transform,
   })
 
   return validator as TypeValidation<T>
@@ -138,7 +141,13 @@ export function setValidatorRejection<T>(
     }) as TypeValidation<T>
   }
 
-  return registerRejectingValidator(obj[functionName], type)
+  const resultValidator: TypeValidation<T> = registerRejectingValidator(
+    obj[functionName],
+    type,
+    () => resultValidator
+  )
+
+  return resultValidator
 }
 
 /**
@@ -179,7 +188,13 @@ export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeVa
     }) as TypeValidation<T>
   }
 
-  return registerRejectingValidator(result, typeName(result))
+  const resultValidator: TypeValidation<T> = registerRejectingValidator(
+    result,
+    typeName(result),
+    () => resultValidator
+  )
+
+  return resultValidator
 }
 
 /**
@@ -196,13 +211,19 @@ export function mapRejection<T>(
 ): TypeValidation<T> {
   // To preserve function name
   const validatorName = validator.name
-  const obj = {
+  const { [validatorName]: validatorFunc } = {
     [validatorName]: ((value, rejectionReason?) => validator(
       value,
       rejectionReason && (rejection => rejectionReason(rejectionProjections(value, rejection))))) as TypeValidation<T>
   }
 
-  return registerRejectingValidator(obj[validatorName], type ?? validator[typeValidatorType])
+  const resultValidation: TypeValidation<T> = registerRejectingValidator(
+    validatorFunc,
+    type ?? validator[typeValidatorType],
+    () => resultValidation
+  )
+
+  return resultValidation
 }
 
 

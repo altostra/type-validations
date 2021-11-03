@@ -1,6 +1,7 @@
 import {
   AnyTypeValidation,
   MAX_DISPLAYED_TYPES,
+  transformValidation,
   TypeValidation,
   ValidatedTypes
   } from './Common'
@@ -65,7 +66,10 @@ export function allOf(
         item,
         rejectionReasons && (rejection => rejectionReasons(rejection))
       ))),
-    type
+    type,
+    (transformation, args) => allOf(...rejectingValidations.pipe(
+      map(validation => validation[transformValidation](transformation, args))
+    ) as any)
   )
 }
 
