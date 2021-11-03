@@ -9,6 +9,7 @@ import {
   } from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
+import { allOf } from '.'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
@@ -21,6 +22,15 @@ describe('objectOf type-validation', () => {
     num: number,
     str: string,
   }, { strict: false })
+  const madeStrict = nonStrict.strict()
+  const madeUnstrict = strict.unstrict()
+  const deepStrict = objectOf.strict(
+    allOf(nonStrict)
+  )
+  const deepUnstrict = objectOf.unstrict(
+    allOf(strict)
+  )
+
   const strictObj = {
     num: 5,
     str: 'a-string',
@@ -40,6 +50,16 @@ describe('objectOf type-validation', () => {
       expect(strict(nonStrictObj)).to.be.false
       expect(nonStrict(strictObj)).to.be.true
       expect(nonStrict(nonStrictObj)).to.be.true
+
+      expect(madeStrict(strictObj)).to.be.true
+      expect(madeStrict(nonStrictObj)).to.be.false
+      expect(madeUnstrict(strictObj)).to.be.true
+      expect(madeUnstrict(nonStrictObj)).to.be.true
+
+      expect(deepStrict(strictObj)).to.be.true
+      expect(deepStrict(nonStrictObj)).to.be.false
+      expect(deepUnstrict(strictObj)).to.be.true
+      expect(deepUnstrict(nonStrictObj)).to.be.true
 
       expect(strictTuple(strictTupleArr)).to.be.true
       expect(strictTuple(nonStrictTupleArr)).to.be.false
@@ -187,6 +207,26 @@ describe('objectOf type-validation', () => {
         callback.resetHistory()
 
         nonStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        madeStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        madeUnstrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        deepStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        deepUnstrict('str', callback)
         expect(callback.callCount).to.be.equal(1)
 
         callback.resetHistory()
