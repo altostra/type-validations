@@ -56,8 +56,8 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
-        it('Shoud not call callback', () => {
+      describe('When value validates successfully', () => {
+        it('Should not call callback', () => {
           stringTest('str', callback)
           maybeStringTest('str', callback)
           maybeStringTest(undefined, callback)
@@ -67,7 +67,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           stringTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -77,7 +77,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           stringTest(true, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(stringTest[typeValidatorType])
 
@@ -127,8 +127,8 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
-        it('Shoud not call callback', () => {
+      describe('When value validates successfully', () => {
+        it('Should not call callback', () => {
           numberTest(4, callback)
           maybeNumberTest(4, callback)
           maybeNumberTest(undefined, callback)
@@ -138,7 +138,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           numberTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -148,7 +148,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           numberTest(true, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(numberTest[typeValidatorType])
 
@@ -198,8 +198,8 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
-        it('Shoud not call callback', () => {
+      describe('When value validates successfully', () => {
+        it('Should not call callback', () => {
           boolTest(false, callback)
           maybeBoolTest(false, callback)
           maybeBoolTest(undefined, callback)
@@ -209,7 +209,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           boolTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -219,7 +219,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           boolTest(3, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(boolTest[typeValidatorType])
 
@@ -269,8 +269,8 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
-        it('Shoud not call callback', () => {
+      describe('When value validates successfully', () => {
+        it('Should not call callback', () => {
           nullTest(null, callback)
           maybeNullTest(null, callback)
           maybeNullTest(undefined, callback)
@@ -280,7 +280,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           nullTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -290,7 +290,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           nullTest(3, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(nullTest[typeValidatorType])
 
@@ -330,8 +330,8 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
-        it('Shoud not call callback', () => {
+      describe('When value validates successfully', () => {
+        it('Should not call callback', () => {
           undefinedTest(undefined, callback)
 
           expect(callback.callCount).to.be.equal(0)
@@ -339,12 +339,12 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           undefinedTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           undefinedTest(3, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(undefinedTest[typeValidatorType])
         })
@@ -389,9 +389,9 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
+      describe('When value validates successfully', () => {
         const sym = Symbol('sym')
-        it('Shoud not call callback', () => {
+        it('Should not call callback', () => {
           symbolTest(sym, callback)
           maybeSymbolTest(sym, callback)
           maybeSymbolTest(undefined, callback)
@@ -401,7 +401,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           symbolTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -411,7 +411,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           symbolTest(3, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(symbolTest[typeValidatorType])
 
@@ -461,10 +461,10 @@ describe('primitive types validations', () => {
         })
       })
 
-      describe('When value validates successfuly', () => {
+      describe('When value validates successfully', () => {
         const bi = BigInt(7)
 
-        it('Shoud not call callback', () => {
+        it('Should not call callback', () => {
           bigintTest(bi, callback)
           maybeBigintTest(bi, callback)
           maybeBigintTest(undefined, callback)
@@ -474,7 +474,7 @@ describe('primitive types validations', () => {
       })
 
       describe('When value fails validation', () => {
-        it('Shoud call callback once', () => {
+        it('Should call callback once', () => {
           bigintTest(['str'], callback)
           expect(callback.callCount).to.be.equal(1)
 
@@ -484,7 +484,7 @@ describe('primitive types validations', () => {
           expect(callback.callCount).to.be.equal(2)
         })
 
-        it('Shoud set correct type for validations', () => {
+        it('Should set correct type for validations', () => {
           bigintTest(3, callback)
           expect(callback.args[0][0].propertyType).to.be.equal(bigintTest[typeValidatorType])
 

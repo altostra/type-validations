@@ -108,7 +108,7 @@ export function bigintAssertion(errFactory: ErrFactory): Assertion<bigint> {
 }
 
 /**
- * Valiadtes any parameter
+ * Validates any parameter
  */
 export const any = registerRejectingValidator(
   ((x: unknown): x is any => true),
@@ -119,7 +119,7 @@ export function anyAssertion(errFactory?: ErrFactory): Assertion<any> {
 }
 
 /**
- * Valiadtes any parameter
+ * Validates any parameter
  */
 export const unknown: TypeValidation<unknown> = any
 
@@ -127,7 +127,7 @@ export const unknownAssertion: (errFactory?: ErrFactory) => Assertion<unknown> =
 
 /**
  *
- * Invaliadtes any parameter
+ * Invalidates any parameter
  */
 export const never = registerRejectingValidator(
   ((val, rejectedReason?): val is never => {

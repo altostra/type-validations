@@ -57,12 +57,12 @@ export type RecordObjectType<T extends object> =
   }
 
 /**
- * Creates a validator that validates that an object has all the provided keys, and otionally prevents from \
+ * Creates a validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
  * @param propsValidation An object that provides a type validator for each property of a validated object
  * @param {strict} `true` to create a validator that fails if an object has more properties than the provided validations;\
  * Otherwise `false`
- * @returns A validator that validates that an object has all the provided keys, and otionally prevents from \
+ * @returns A validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
  */
 export function objectOf<T extends object>(
@@ -81,22 +81,22 @@ export function objectOf<T extends object>(
     }
   }
 
-  const allValidatonTypes = validationEntries
+  const allValidationTypes = validationEntries
     .map(([key, validator]) => isTuple
       ? indent(typeName(validator), '  ')
       : `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
 
   // Remove length validation from printed type
   if (isTuple && strict) {
-    allValidatonTypes.pop()
+    allValidationTypes.pop()
   }
 
-  const validationTypes = allValidatonTypes.length <= MAX_DISPLAYED_TYPES
-    ? allValidatonTypes
+  const validationTypes = allValidationTypes.length <= MAX_DISPLAYED_TYPES
+    ? allValidationTypes
     : [
-      ...allValidatonTypes.slice(0, 2),
+      ...allValidationTypes.slice(0, 2),
       '...',
-      ...allValidatonTypes.slice(allValidatonTypes.length - 2, allValidatonTypes.length),
+      ...allValidationTypes.slice(allValidationTypes.length - 2, allValidationTypes.length),
     ]
 
   if (!strict && !isTuple) {
@@ -151,14 +151,14 @@ export function objectOf<T extends object>(
         return result
       }
 
-      const supprotedKeys = new Set(Object.keys(propsValidation))
+      const supportedKeys = new Set(Object.keys(propsValidation))
 
       return Object.keys(val)
         .every(key => {
           if (!rejectionReasons) {
-            return supprotedKeys.has(key)
+            return supportedKeys.has(key)
           }
-          else if (supprotedKeys.has(key)) {
+          else if (supportedKeys.has(key)) {
             return true
           }
 

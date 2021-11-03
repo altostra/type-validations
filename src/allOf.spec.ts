@@ -9,7 +9,7 @@ import {
   string,
   symbol,
   undefinedValidation
-} from './primitives'
+  } from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
 import { expect } from 'chai'
@@ -63,19 +63,19 @@ describe('allOf type-validation', () => {
       })
     })
 
-    it('Shoud not call callback if value validates successfuly', () => {
+    it('Should not call callback if value validates successfuly', () => {
       allOfTest(['str1', 'str2'], callback)
 
       expect(callback.callCount).to.be.equal(0)
     })
 
-    it('Shoud call callback once value fails some validations', () => {
+    it('Should call callback once value fails some validations', () => {
       allOfTest(['str'], callback)
 
       expect(callback.callCount).to.be.equal(1)
     })
 
-    it('Shoud call callback once value fails many validations', () => {
+    it('Should call callback once value fails many validations', () => {
       allOfTest(5, callback)
 
       expect(callback.callCount).to.be.equal(1)

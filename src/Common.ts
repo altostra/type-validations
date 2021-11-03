@@ -14,7 +14,7 @@ export type AnyTypeValidation<T> =
 /**
 * Type validator that can validate values' types and have metadata and validation rejection reasons
 * @param item Value to validate
-* @param [rejectionReasons] Optional callback that would be called with validaton rejecton reasons.\
+* @param [rejectionReasons] Optional callback that would be called with validation rejection reasons.\
 * \
 * When validation succeeds - `rejectionReasons` would **not** be invoked.\
 * When validation fails - `rejectionReasons` would be invoked **at least once**,
@@ -29,7 +29,7 @@ export type TypeValidationFunc<T> = (
 /**
  * Type validator that can validate values' types and have metadata and validation rejection reasons
  * @param value Value to validate
- * @param [rejectionReasons] Optional callback that would be called with validaton rejecton reasons.\
+ * @param [rejectionReasons] Optional callback that would be called with validation rejection reasons.\
  * \
  * When validation succeeds - `rejectionReasons` would **not** be invoked.\
  * When validation fails - `rejectionReasons` would be invoked **at least once**,
@@ -40,19 +40,19 @@ export interface TypeValidation<T> extends TypeValidationFunc<T> {
   /**A description of the validated type */
   [typeValidatorType]: string
   /**
-   * Returns a predicate (no second arguemnt) for the specified validator
-   * @returns A predicate (no second arguemnt) for the specified validator
+   * Returns a predicate (no second argument) for the specified validator
+   * @returns A predicate (no second argument) for the specified validator
    */
   asPredicate(this: TypeValidation<T>): (val: unknown) => boolean
   /**
-   * Returns a type-guard predicate (no second arguemnt) for the specified validator
-   * @returns A type-guard predicate (no second arguemnt) for the specified validator
+   * Returns a type-guard predicate (no second argument) for the specified validator
+   * @returns A type-guard predicate (no second argument) for the specified validator
    */
   asTypePredicate(this: TypeValidation<T>): (val: unknown) => val is T
 }
 
 /*
- * A type that convert a predicate (function to boolean) to a type-gaurd of a specified type
+ * A type that convert a predicate (function to boolean) to a type-guard of a specified type
  */
 export type AsTypeValidation<T, TFunc extends (arg: any) => boolean> = TFunc extends (arg: unknown) => boolean
   ? TypeValidation<T>
@@ -118,4 +118,4 @@ export type ValidatedTypes<T> = T extends [AnyTypeValidation<infer U>, ...infer 
   ? [U, ...ValidatedTypes<Rest>]
   : T
 
-export type NotEmptyArray<T> =readonly [T, ...T[]]
+export type NotEmptyArray<T> = readonly [T, ...T[]]

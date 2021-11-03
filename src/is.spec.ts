@@ -98,20 +98,20 @@ describe('`is` type-validation', () => {
       })
     })
 
-    describe('When value validates successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value validates successfully', () => {
+      it('Should not call callback', () => {
         isTest(5, callback)
         expect(callback.callCount).to.be.equal(0)
       })
     })
 
     describe('When value fails validation', () => {
-      it('Shoud call callback once', () => {
+      it('Should call callback once', () => {
         isTest(['str'], callback)
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud set correct type for validations', () => {
+      it('Should set correct type for validations', () => {
         isTest(true, callback)
 
         expect(callback.args[0][0].propertyType).to.be.equal(isTest[typeValidatorType])

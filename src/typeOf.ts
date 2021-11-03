@@ -24,7 +24,7 @@ export function typeOf(x: unknown) {
     case 'object': {
       return x === null
         ? 'null'
-        : `is(${objectTyoe(x)})`
+        : `is(${objectType(x)})`
     }
 
     case 'string': {
@@ -39,7 +39,7 @@ export function typeOf(x: unknown) {
 function functionType(fn: Function): string {
   return `(...args) => *`
 }
-function objectTyoe(obj: object): string {
+function objectType(obj: object): string {
   return Array.isArray(obj)
     ? '[ ... ]'
     : '{ ... }'

@@ -58,7 +58,7 @@ export const invalidPrimitives: { [P in Primitives]?: boolean } = {
 
 
 describe('Type validations', () => {
-  describe('Premitive validations', () => {
+  describe('Primitive validations', () => {
     describe('When validating string', () => {
       it('Should validate a string', () => {
         expect(primitives.string('')).to.be.true
@@ -190,7 +190,7 @@ describe('Type validations', () => {
     })
   })
 
-  describe('Nullable premitive validations', () => {
+  describe('Nullable primitive validations', () => {
     describe('When validating string', () => {
       it('Should validate a string', () => {
         expect(primitives.maybeString('')).to.be.true

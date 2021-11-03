@@ -55,16 +55,16 @@ describe('anyOf type-validation', () => {
       })
     })
 
-    describe('When value is being validated successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value is being validated successfully', () => {
+      it('Should not call callback', () => {
         anyOfTest(5, callback)
 
         expect(callback.callCount).to.be.equal(0)
       })
     })
 
-    describe('When value is not being validated successfuly', () => {
-      it('Shoud call callback for all failure', () => {
+    describe('When value is not being validated successfully', () => {
+      it('Should call callback for all failure', () => {
         anyOfTest(true, callback)
 
         expect(callback.callCount).to.be.equal(2)

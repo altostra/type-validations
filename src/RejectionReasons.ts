@@ -60,8 +60,8 @@ export function isTypeValidation<T>(
 const predicates = new WeakMap<TypeValidation<any>, (val: any) => boolean>()
 
 /**
- * Returns a type-guard predicate (no second arguemnt) for the specified validator
- * @returns A type-guard predicate (no second arguemnt) for the specified validator
+ * Returns a type-guard predicate (no second argument) for the specified validator
+ * @returns A type-guard predicate (no second argument) for the specified validator
  */
 export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boolean {
   if (predicates.has(this)) {

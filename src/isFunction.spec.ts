@@ -121,8 +121,8 @@ describe('isFunction type-validation', () => {
       })
     })
 
-    describe('When value validates successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value validates successfully', () => {
+      it('Should not call callback', () => {
         from(allValidators)
           .pipe(
             map((validator, arity) => ({ validator, func: allFuncs[arity] }))
@@ -137,7 +137,7 @@ describe('isFunction type-validation', () => {
     })
 
     describe('When value fails validation', () => {
-      it('Shoud call callback once', () => {
+      it('Should call callback once', () => {
         allValidators.forEach(validation => {
           callback.resetHistory()
           validation(0, callback)
@@ -146,7 +146,7 @@ describe('isFunction type-validation', () => {
         })
       })
 
-      it('Shoud set correct type for validations', () => {
+      it('Should set correct type for validations', () => {
         allValidators.forEach(validation => {
           callback.resetHistory()
           validation(0, callback)

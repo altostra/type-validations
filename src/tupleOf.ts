@@ -3,10 +3,10 @@ import { objectOf, ObjectOrTupleValidations } from './objectOf'
 
 
 /**
- * Creates a validator that validates that an object is an array with spefic length,
+ * Creates a validator that validates that an object is an array with specific length,
  * has all the provided indices validated.
  * @param validations The tuple positional validations
- * @returns A validator that validates that an object is an array with spefic length,
+ * @returns A validator that validates that an object is an array with specific length,
  * has all the provided indices validated.
  */
 export function tupleOf<T extends any[]>(

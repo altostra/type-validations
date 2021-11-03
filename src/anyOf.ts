@@ -42,7 +42,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
 ): TypeValidation<UnionOf<ValidatedTypes<T>>> {
   const type = anyOfType(validations)
 
-  const rejectingValidatons = from(validations)
+  const rejectingValidations = from(validations)
     .pipe(
       map(validation => asRejectingValidator(validation))
     )
@@ -52,7 +52,7 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
       const rejections: ValidationRejection[] = []
 
       const isValid = some(
-        rejectingValidatons,
+        rejectingValidations,
         validation =>
           validation(
             item,
@@ -75,7 +75,7 @@ export default anyOf
 
 export function anyOfType(validations: readonly AnyTypeValidation<any>[]): string {
   const allTypes = validations
-    .map(validatation => typeName(validatation))
+    .map(validation => typeName(validation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
     ? allTypes
     : [

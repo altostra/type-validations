@@ -10,7 +10,7 @@ import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
 
 /**
- * An intersaction of all types in a tuple
+ * An intersection of all types in a tuple
  */
 export type IntersectionOf<T> = T extends readonly [infer U, ...infer V]
   ? U & IntersectionOf<V>
@@ -43,7 +43,7 @@ export function allOf(
   ...validations: AnyTypeValidation<any>[]
 ): TypeValidation<IntersectionOf<ValidatedTypes<any>>> {
   const allTypes = validations
-    .map(validatation => typeName(validatation))
+    .map(validation => typeName(validation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
     ? allTypes
     : [
@@ -53,14 +53,14 @@ export function allOf(
     ]
   const type = types.join(' & ')
 
-  const rejectingValidatons = from(validations)
+  const rejectingValidations = from(validations)
     .pipe(
       map(validation => asRejectingValidator(validation))
     )
 
   return registerRejectingValidator(
     ((item: unknown, rejectionReasons?): item is IntersectionOf<ValidatedTypes<any>> => every(
-      rejectingValidatons,
+      rejectingValidations,
       validation => validation(
         item,
         rejectionReasons && (rejection => rejectionReasons(rejection))
