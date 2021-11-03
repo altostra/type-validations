@@ -68,158 +68,175 @@ export interface ObjectOfTypeValidation<T extends object> extends TypeValidation
  * Creates a validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
  * @param propsValidation An object that provides a type validator for each property of a validated object
+ * @returns A validator that validates that an object has all the provided keys, and optionally prevents from \
+ * the object to have additional keys
+ */
+function objectOf<T extends object>(
+  propsValidation: ObjectOrTupleValidations<T>,
+): ObjectOfTypeValidation<T>
+/**
+ * Creates a validator that validates that an object has all the provided keys, and optionally prevents from \
+ * the object to have additional keys
+ * @param propsValidation An object that provides a type validator for each property of a validated object
  * @param {strict} `true` to create a validator that fails if an object has more properties than the provided validations;\
  * Otherwise `false`
  * @returns A validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
+ * @deprecated Use `objectOf({...}).strict()` instead.
  */
-const validation = Object.assign(
-  function objectOf<T extends object>(
-    propsValidation: ObjectOrTupleValidations<T>,
-    { strict }: ObjectOfOptions = {}
-  ): ObjectOfTypeValidation<T> {
-    const validationEntries = Object.entries(propsValidation) as [string, AnyTypeValidation<T[keyof T]>][]
-    let isTuple = false
+function objectOf<T extends object>(
+  propsValidation: ObjectOrTupleValidations<T>,
+  options?: ObjectOfOptions
+): ObjectOfTypeValidation<T>
+function objectOf<T extends object>(
+  propsValidation: ObjectOrTupleValidations<T>,
+  { strict }: ObjectOfOptions = {}
+): ObjectOfTypeValidation<T> {
+  const validationEntries = Object.entries(propsValidation) as [string, AnyTypeValidation<T[keyof T]>][]
+  let isTuple = false
 
-    if (Array.isArray(propsValidation)) {
-      isTuple = true
-      strict = strict ?? true
+  if (Array.isArray(propsValidation)) {
+    isTuple = true
+    strict = strict ?? true
 
-      if (strict) {
-        validationEntries.push(['length', is(propsValidation.length)])
-      }
+    if (strict) {
+      validationEntries.push(['length', is(propsValidation.length)])
     }
+  }
 
-    const allValidationTypes = validationEntries
-      .map(([key, validator]) => isTuple
-        ? indent(typeName(validator), '  ')
-        : `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
+  const allValidationTypes = validationEntries
+    .map(([key, validator]) => isTuple
+      ? indent(typeName(validator), '  ')
+      : `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
 
-    // Remove length validation from printed type
-    if (isTuple && strict) {
-      allValidationTypes.pop()
-    }
+  // Remove length validation from printed type
+  if (isTuple && strict) {
+    allValidationTypes.pop()
+  }
 
-    const validationTypes = allValidationTypes.length <= MAX_DISPLAYED_TYPES
-      ? allValidationTypes
-      : [
-        ...allValidationTypes.slice(0, 2),
-        '...',
-        ...allValidationTypes.slice(allValidationTypes.length - 2, allValidationTypes.length),
-      ]
+  const validationTypes = allValidationTypes.length <= MAX_DISPLAYED_TYPES
+    ? allValidationTypes
+    : [
+      ...allValidationTypes.slice(0, 2),
+      '...',
+      ...allValidationTypes.slice(allValidationTypes.length - 2, allValidationTypes.length),
+    ]
 
-    if (!strict && !isTuple) {
-      validationTypes.push('[*]: *')
-    }
-    else if (!strict) {
-      validationTypes.push('...*[]')
-    }
+  if (!strict && !isTuple) {
+    validationTypes.push('[*]: *')
+  }
+  else if (!strict) {
+    validationTypes.push('...*[]')
+  }
 
-    const type = isTuple
-      ? `[
+  const type = isTuple
+    ? `[
   ${validationTypes.join(',\n  ')}
 ]`
-      : `{
+    : `{
   ${validationTypes.join(',\n  ')}
 }`
 
-    const rejectorsEntries = validationEntries.map(([key, validation]) =>
-      [key, asRejectingValidator(validation)] as [string, TypeValidation<any>])
+  const rejectorsEntries = validationEntries.map(([key, validation]) =>
+    [key, asRejectingValidator(validation)] as [string, TypeValidation<any>])
 
-    propsValidation = fromEntries(rejectorsEntries) as typeof propsValidation
+  propsValidation = fromEntries(rejectorsEntries) as typeof propsValidation
 
-    const result: ObjectOfTypeValidation<T> = Object.assign(
-      registerRejectingValidator(
-        ((val: unknown, rejectionReasons?): val is T => {
-          if (!isObject(val)) {
-            rejectionReasons?.(createRejection(
-              rejectionMessage`Value ${val} is not an object`,
-              type
-            ))
+  const result: ObjectOfTypeValidation<T> = Object.assign(
+    registerRejectingValidator(
+      ((val: unknown, rejectionReasons?): val is T => {
+        if (!isObject(val)) {
+          rejectionReasons?.(createRejection(
+            rejectionMessage`Value ${val} is not an object`,
+            type
+          ))
 
-            return false
-          }
-          if (isTuple && !Array.isArray(val)) {
-            rejectionReasons?.(createRejection(
-              rejectionMessage`Value ${val} is not an array`,
-              type
-            ))
+          return false
+        }
+        if (isTuple && !Array.isArray(val)) {
+          rejectionReasons?.(createRejection(
+            rejectionMessage`Value ${val} is not an array`,
+            type
+          ))
 
-            return false
-          }
+          return false
+        }
 
-          const result = Object.entries(propsValidation)
-            .every(([key, validation]) => (validation as AnyTypeValidation<unknown>)(
-              val[key],
-              rejectionReasons && (rejection => {
-                rejection.path.push(pathKey(key))
+        const result = Object.entries(propsValidation)
+          .every(([key, validation]) => (validation as AnyTypeValidation<unknown>)(
+            val[key],
+            rejectionReasons && (rejection => {
+              rejection.path.push(pathKey(key))
 
-                return rejectionReasons(rejection)
-              })
-            ))
-
-          if (!strict || !result) {
-            return result
-          }
-
-          const supportedKeys = new Set(Object.keys(propsValidation))
-
-          return Object.keys(val)
-            .every(key => {
-              if (!rejectionReasons) {
-                return supportedKeys.has(key)
-              }
-              else if (supportedKeys.has(key)) {
-                return true
-              }
-
-              rejectionReasons(createRejection(
-                rejectionMessage`Object has redundant key ${key}, and failed strict validation`,
-                type,
-                [pathKey(key)]
-              ))
+              return rejectionReasons(rejection)
             })
-        }),
-        type,
-        (transformation, args) => {
-          const transformedValidators: typeof rejectorsEntries = rejectorsEntries.map(([key, validation]) =>
-            [key, validation[transformValidation](transformation, args)])
+          ))
 
-          let isStrict = strict
+        if (!strict || !result) {
+          return result
+        }
 
-          if (transformation === strictnessTransformation) {
-            const [strict] = args
+        const supportedKeys = new Set(Object.keys(propsValidation))
 
-            if (typeof strict !== 'boolean') {
-              throw new Error(`Invalid strictness arg!
-Arg: ${strict}`)
+        return Object.keys(val)
+          .every(key => {
+            if (!rejectionReasons) {
+              return supportedKeys.has(key)
+            }
+            else if (supportedKeys.has(key)) {
+              return true
             }
 
-            isStrict = strict
+            rejectionReasons(createRejection(
+              rejectionMessage`Object has redundant key ${key}, and failed strict validation`,
+              type,
+              [pathKey(key)]
+            ))
+          })
+      }),
+      type,
+      (transformation, args) => {
+        const transformedValidators: typeof rejectorsEntries = rejectorsEntries.map(([key, validation]) =>
+          [key, validation[transformValidation](transformation, args)])
+
+        let isStrict = strict
+
+        if (transformation === strictnessTransformation) {
+          const [strict] = args
+
+          if (typeof strict !== 'boolean') {
+            throw new Error(`Invalid strictness arg!
+Arg: ${strict}`)
           }
 
-          // Remove length validation from explicit validator (it would be re-added)
-          if (isTuple && strict) {
-            transformedValidators.pop()
-          }
-
-          const objectOfValidators: typeof propsValidation = isTuple
-            ? transformedValidators.map(([, validation]) => validation)
-            : fromEntries(transformedValidators) as any
-
-          return objectOf(objectOfValidators, { strict: isStrict })
+          isStrict = strict
         }
-      ), {
-      strict() {
-        return validation.strict(result) as ObjectOfTypeValidation<T>
-      },
-      unstrict() {
-        return validation.unstrict(result) as ObjectOfTypeValidation<T>
-      }
-    })
 
-    return result
-  }, {
+        // Remove length validation from explicit validator (it would be re-added)
+        if (isTuple && strict) {
+          transformedValidators.pop()
+        }
+
+        const objectOfValidators: typeof propsValidation = isTuple
+          ? transformedValidators.map(([, validation]) => validation)
+          : fromEntries(transformedValidators) as any
+
+        return objectOf(objectOfValidators, { strict: isStrict })
+      }
+    ), {
+    strict() {
+      return validation.strict(result) as ObjectOfTypeValidation<T>
+    },
+    unstrict() {
+      return validation.unstrict(result) as ObjectOfTypeValidation<T>
+    }
+  })
+
+  return result
+}
+
+const validation = Object.assign(
+  objectOf, {
   strict<T extends TypeValidation<any>>(validation: T): T {
     return validation[transformValidation](strictnessTransformation, [true]) as T
   },
@@ -228,5 +245,5 @@ Arg: ${strict}`)
   },
 })
 
-export const objectOf = validation
-export default objectOf
+export { validation as objectOf }
+export default validation
