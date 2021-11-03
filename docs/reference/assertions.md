@@ -45,7 +45,7 @@ const { body } = request;
 validateBody(body)
 useBody(body)
 
-function validateBody(value: unknown): asserts value is ExptedType {
+function validateBody(value: unknown): asserts value is ExpectedType {
   const rejections: ValidationRejection[] = [];
 
   if (!isBodyExpectedType(body, rejection => rejections.push(rejection))) {
@@ -95,7 +95,7 @@ The validated type of the provided *type-validation*.
 ##### `errFactory`
 A function that creates an error for a given value and rejections.
 
-**Type:** (val: unknown, rejetions: ValidationRejection[]) => unknown
+**Type:** (val: unknown, rejections: ValidationRejection[]) => unknown
 
 #### Return value
 

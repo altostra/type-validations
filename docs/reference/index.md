@@ -28,7 +28,7 @@ Value to validate
 **Type:** `unknown`
 
 #### `rejectionReasons`
-Optional callback that would be called with validaton rejecton reasons.  
+Optional callback that would be called with validation rejection reasons.  
 
 - When validation succeeds - `rejectionReasons` would **not** be invoked.
 - When validation fails - `rejectionReasons` would be invoked **at least once**
@@ -44,10 +44,10 @@ A description of the validated type
 ### Methods
 
 #### `asPredicate(): (value: unknown) => boolean`
-Returns a predicate (no second arguemnt) for the specified validator.
+Returns a predicate (no second argument) for the specified validator.
 
 #### `asPredicate(): (value: unknown) => value is T`
-Returns a type-guard predicate (no second arguemnt) for the specified validator.
+Returns a type-guard predicate (no second argument) for the specified validator.
 
 ## Rejections
 
@@ -62,7 +62,7 @@ guaranteed it would never be called for values that pass validation.
 Name | Type | Description
 -|-|-
 `path` | `string[]` | The property names leading to the failing property (ordered inside-out).
-`reasone` | `string` | A string describing the reason the property values failed to validate.
+`reason` | `string` | A string describing the reason the property values failed to validate.
 `propertyType` | `string` | A string visualizing the type of the failing property.
 
 ## Reference

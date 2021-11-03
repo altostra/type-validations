@@ -20,7 +20,7 @@ Type validation | Validated type | Remarks
 `maybeBoolean` | `boolean` \| `undefined`
 `nullOrUndefined` | `null` \| `undefined`
 `maybeSymbol` | `symbol` \| `undefined`
-`maybeBigint` | `bitint` \| `undefined`
+`maybeBigint` | `bigint` \| `undefined`
 
 ## *Assertions*
 The following *assertion*s provide assertions for all JavaScript's primitive types.
@@ -32,7 +32,7 @@ Each assertion function creates a corresponding assertion provided `errFactory` 
 #### `errFactory`
 A function that creates an error for a given value and rejections.
 
-**Type:** (val: unknown, rejetions: ValidationRejection[]) => unknown
+**Type:** (val: unknown, rejections: ValidationRejection[]) => unknown
 
 ### *Assertion* factories
 
@@ -53,4 +53,4 @@ Assertion factory | Validated type | Remarks
 `maybeBooleanAssertion` | `boolean` \| `undefined`
 `nullOrUndefinedAssertion` | `null` \| `undefined`
 `maybeSymbolAssertion` | `symbol` \| `undefined`
-`maybeBigintAssertion` | `bitint` \| `undefined`
+`maybeBigintAssertion` | `bigint` \| `undefined`

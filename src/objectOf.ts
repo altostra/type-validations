@@ -59,48 +59,97 @@ export type RecordObjectType<T extends object> =
     : unknown
   }
 
+/**
+ * A `TypeValidation<T>` that validates object
+ */
 export interface ObjectOfTypeValidation<T extends object> extends TypeValidation<T> {
+  /**
+   * Returns a `ObjectOfTypeValidation<T>` validation that also checks that the
+   * object contains no unspecified properties.
+   *
+   * Affect all `objectOf` validations,  \
+   * If one of the specified properties is also an object validated using `objectOf`,
+   * in the returned validation the property would also perform strict validations,
+   * and so on, recursively.
+   * @example
+   * const testedObject = {
+   *   nested: {
+   *     a: 1,
+   *     b: 2,
+   *   },
+   * }
+   *
+   * const isMyObject = objectOf({
+   *   nested: objectOf({
+   *     a: number,
+   *   })
+   * })
+   *
+   * const isStrictlyMyObject = isMyObject.strict()
+   *
+   * const tested = isMyObject(testedObject) // true
+   * const strictlyTested = isStrictlyMyObject(testedObject) // false
+   */
   strict(): ObjectOfTypeValidation<T>
+  /**
+   * Returns a `ObjectOfTypeValidation<T>` validation that only validates the
+   * specified properties and never checks that an object contains other, unspecified, properties.
+   *
+   * Affect all `objectOf` validations,  \
+   * If one of the specified properties is also an object validated using `objectOf`,
+   * in the returned validation the property would also perform non-strict validations,
+   * and so on, recursively.
+   * @example
+   * const testedObject = {
+   *   nested: {
+   *     a: 1,
+   *     b: 2,
+   *   },
+   * }
+   *
+   * const isStrictlyMyObject = objectOf({
+   *   // This nested property is strictly validated
+   *   nested: objectOf({
+   *     a: number,
+   *   }).strict()
+   * })
+   *
+   * const isMyObject = isStrictlyMyObject.unstrict()
+   *
+   * const tested = isStrictlyMyObject(testedObject) // false
+   * const nonStrictlyTested = isMyObject(testedObject) // true
+   */
   unstrict(): ObjectOfTypeValidation<T>
+  /**
+   * Returns the `propertiesSpec` used to create this validation.
+   */
+  propertySpec(): ObjectOrTupleValidations<T>
 }
 
 /**
  * Creates a validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
- * @param propsValidation An object that provides a type validator for each property of a validated object
- * @returns A validator that validates that an object has all the provided keys, and optionally prevents from \
- * the object to have additional keys
- */
-function objectOf<T extends object>(
-  propsValidation: ObjectOrTupleValidations<T>,
-): ObjectOfTypeValidation<T>
-/**
- * Creates a validator that validates that an object has all the provided keys, and optionally prevents from \
- * the object to have additional keys
- * @param propsValidation An object that provides a type validator for each property of a validated object
+ * @param propertySpec An object that provides a type validator for each property of a validated object
  * @param {strict} `true` to create a validator that fails if an object has more properties than the provided validations;\
- * Otherwise `false`
+ * Otherwise `false` \
+ * \
+ * Does not affect validations specified by `propertySpec`.
  * @returns A validator that validates that an object has all the provided keys, and optionally prevents from \
  * the object to have additional keys
- * @deprecated Use `objectOf({...}).strict()` instead.
  */
 function objectOf<T extends object>(
-  propsValidation: ObjectOrTupleValidations<T>,
-  options?: ObjectOfOptions
-): ObjectOfTypeValidation<T>
-function objectOf<T extends object>(
-  propsValidation: ObjectOrTupleValidations<T>,
+  propertySpec: ObjectOrTupleValidations<T>,
   { strict }: ObjectOfOptions = {}
 ): ObjectOfTypeValidation<T> {
-  const validationEntries = Object.entries(propsValidation) as [string, AnyTypeValidation<T[keyof T]>][]
+  const validationEntries = Object.entries(propertySpec) as [string, AnyTypeValidation<T[keyof T]>][]
   let isTuple = false
 
-  if (Array.isArray(propsValidation)) {
+  if (Array.isArray(propertySpec)) {
     isTuple = true
     strict = strict ?? true
 
     if (strict) {
-      validationEntries.push(['length', is(propsValidation.length)])
+      validationEntries.push(['length', is(propertySpec.length)])
     }
   }
 
@@ -140,7 +189,7 @@ function objectOf<T extends object>(
   const rejectorsEntries = validationEntries.map(([key, validation]) =>
     [key, asRejectingValidator(validation)] as [string, TypeValidation<any>])
 
-  propsValidation = fromEntries(rejectorsEntries) as typeof propsValidation
+  propertySpec = fromEntries(rejectorsEntries) as typeof propertySpec
 
   const result: ObjectOfTypeValidation<T> = Object.assign(
     registerRejectingValidator(
@@ -162,7 +211,7 @@ function objectOf<T extends object>(
           return false
         }
 
-        const result = Object.entries(propsValidation)
+        const result = Object.entries(propertySpec)
           .every(([key, validation]) => (validation as AnyTypeValidation<unknown>)(
             val[key],
             rejectionReasons && (rejection => {
@@ -176,7 +225,7 @@ function objectOf<T extends object>(
           return result
         }
 
-        const supportedKeys = new Set(Object.keys(propsValidation))
+        const supportedKeys = new Set(Object.keys(propertySpec))
 
         return Object.keys(val)
           .every(key => {
@@ -217,7 +266,7 @@ Arg: ${strict}`)
           transformedValidators.pop()
         }
 
-        const objectOfValidators: typeof propsValidation = isTuple
+        const objectOfValidators: typeof propertySpec = isTuple
           ? transformedValidators.map(([, validation]) => validation)
           : fromEntries(transformedValidators) as any
 
@@ -229,7 +278,10 @@ Arg: ${strict}`)
     },
     unstrict() {
       return validation.unstrict(result) as ObjectOfTypeValidation<T>
-    }
+    },
+    propertySpec: () => (Array.isArray(propertySpec)
+      ? [...propertySpec]
+      : { ...propertySpec }) as typeof propertySpec,
   })
 
   return result
@@ -237,9 +289,17 @@ Arg: ${strict}`)
 
 const validation = Object.assign(
   objectOf, {
+  /**
+   * Returns a new validation where all nested `objectOf` validations are strict
+   * @param validation The validation to make strict
+   */
   strict<T extends TypeValidation<any>>(validation: T): T {
     return validation[transformValidation](strictnessTransformation, [true]) as T
   },
+  /**
+  * Returns a new validation where all nested `objectOf` validations are non-strict
+  * @param validation The validation to make non-strict
+  */
   unstrict<T extends TypeValidation<any>>(validation: T): T {
     return validation[transformValidation](strictnessTransformation, [false]) as T
   },

@@ -122,7 +122,7 @@ const isTaggedUnion = taggedUnionOf('objectTag', new Map(
 ))
 ```
 
-### Combinging *tagged-union* validators.
+### Combining *tagged-union* validators.
 
 It is possible to use *tagged-union* validator to compose validators
 for larger *tagged-unions* as long the **tag** property key is the same.

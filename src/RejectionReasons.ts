@@ -86,19 +86,20 @@ export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boole
  * *This function does not change the function, and does not caus it to notify.*
  * @param validator The validator to register, and add methods and metadata to
  * @param type The checked type be the validator
+ * @param transform A function that performs transformation on nested validators (if there are any)
  *
  * @returns The function with metadata stored for it.
  */
 export function registerRejectingValidator<T>(
   validator: TypeValidationFunc<T>,
   type: string,
-  transform: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
+  transform?: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 ): TypeValidation<T> {
   Object.assign(validator, {
     [typeValidatorType]: type,
     asPredicate,
     asTypePredicate: asPredicate,
-    [transformValidation]: transform,
+    [transformValidation]: transform ?? (() => validator),
   })
 
   return validator as TypeValidation<T>

@@ -62,7 +62,7 @@ class ConsoleLogger implements Loggable {
 
 const jim = extend(new Person('Jim'), ConsoleLogger.prototype)
 
-const isLogable = objectOf({
+const isLoggable = objectOf({
     log: isFunction(),
 })
 
@@ -70,7 +70,7 @@ const isNamedJim = objectOf({
     name: is('Jim' as const),
 })
 
-const isJim = allOf(isNamedJim, isLogable)
+const isJim = allOf(isNamedJim, isLoggable)
 
 // ==========================================
 
