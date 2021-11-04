@@ -122,7 +122,7 @@ if (isMyTuple(myTupleIncognito)) {
 
 ### Non-strict validations
 
-A non-strict *object validation* tests all the properties specified by `propertySpec`.
+A non-strict *object validation* tests all the properties specified by `propertySpec`.  
 No matter how many additional properties an object has nor what values they have - 
 that object would pass non-strict validation:
 
@@ -142,7 +142,7 @@ const test = isMyObject(anObject) // true
 
 A strict *object validation* tests all the properties specified by `propertySpec`,
 just like a non-strict validation does, and also validated that an object does not
-have additional properties.
+have additional properties.  
 In order to pass a strict validation an object must have all the specified properties,
 and nothing else:
 
