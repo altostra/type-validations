@@ -245,8 +245,10 @@ function objectOf<T extends object>(
       }),
       type,
       (transformation, args) => {
-        const transformedValidators: typeof rejectorsEntries = rejectorsEntries.map(([key, validation]) =>
-          [key, validation[transformValidation](transformation, args)])
+        const transformedValidators: typeof rejectorsEntries =
+          rejectorsEntries.map(
+            ([key, validation]) => [key, validation[transformValidation](transformation, args)]
+          )
 
         let isStrict = strict
 
