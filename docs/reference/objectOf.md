@@ -211,6 +211,10 @@ that was created with `objectOf`, you can simply call `validator.strict()` to cr
 a validation that is *strict* in all its nested properties.  
 
 ```ts
+const isMyObject = objectOf({
+  nested: isNestedObject,
+})
+
 const isStrictlyMyObject = isMyObject.strict()
 
 const isNestedStrict = isMyObject(nestedNonStrict) // false, and correct
