@@ -1,5 +1,4 @@
 import { createRejection, registerRejectingValidator, rejectionMessage } from './RejectionReasons'
-import type { TypeValidation } from './Common'
 
 const IS_EMPTY_ARRAY_TYPE = '[]'
 
