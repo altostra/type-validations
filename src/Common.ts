@@ -51,6 +51,9 @@ export interface TypeValidation<T> extends TypeValidationFunc<T> {
    * @returns A type-guard predicate (no second argument) for the specified validator
    */
   asTypePredicate(this: TypeValidation<T>): (val: unknown) => val is T
+  /**
+   * Create a new TypeValidation where the specified transformation is applied.
+   */
   [transformValidation]: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 }
 

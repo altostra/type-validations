@@ -6,7 +6,7 @@ const EMPTY_OBJECT_TYPE = '{}'
 /**
  * A validator that checks if a value is an empty object
  */
-export const isEmptyObject: TypeValidation<Record<never, unknown>> = registerRejectingValidator(
+export const isEmptyObject = registerRejectingValidator(
   ((val: unknown, rejectionReasons?): val is Record<never, unknown> => {
     if (!isObject(val)) {
       rejectionReasons?.(createRejection(
@@ -27,8 +27,7 @@ export const isEmptyObject: TypeValidation<Record<never, unknown>> = registerRej
 
     return true
   }),
-  EMPTY_OBJECT_TYPE,
-  () => isEmptyObject
+  EMPTY_OBJECT_TYPE
 )
 
 export default isEmptyObject

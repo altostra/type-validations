@@ -62,7 +62,7 @@ export function booleanAssertion(errFactory: ErrFactory): Assertion<boolean> {
 /**
  * Validates that the parameter is a null
  */
-export const nullValidation: TypeValidation<null> = registerRejectingValidator(
+export const nullValidation = registerRejectingValidator(
   ((x: unknown, rejectionReason?): x is null => {
     if (x === null) {
       return true
@@ -75,8 +75,7 @@ export const nullValidation: TypeValidation<null> = registerRejectingValidator(
 
     return false
   }),
-  'null',
-  () => nullValidation
+  'null'
 )
 export { nullValidation as null }
 
@@ -114,10 +113,9 @@ export function bigintAssertion(errFactory: ErrFactory): Assertion<bigint> {
 /**
  * Validates any parameter
  */
-export const any: TypeValidation<any> = registerRejectingValidator(
+export const any = registerRejectingValidator(
   ((x: unknown): x is any => true),
-  '*',
-  () => any
+  '*'
 )
 export function anyAssertion(errFactory?: ErrFactory): Assertion<any> {
   return () => { }
@@ -134,7 +132,7 @@ export const unknownAssertion: (errFactory?: ErrFactory) => Assertion<unknown> =
  *
  * Invalidates any parameter
  */
-export const never: TypeValidation<never> = registerRejectingValidator(
+export const never = registerRejectingValidator(
   ((val, rejectedReason?): val is never => {
     rejectedReason?.(createRejection(
       rejectionMessage`Value ${val} exists therefor is not 'never'.`,
@@ -143,8 +141,7 @@ export const never: TypeValidation<never> = registerRejectingValidator(
 
     return false
   }),
-  'X (never)',
-  () => never
+  'X (never)'
 )
 
 export function assert(errFactory: ErrFactory): Assertion<never> {

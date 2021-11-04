@@ -6,7 +6,7 @@ const IS_EMPTY_ARRAY_TYPE = '[]'
 /**
  * A validator that checks if a value is an empty array
  */
-export const isEmptyArray: TypeValidation<[]> = registerRejectingValidator(
+export const isEmptyArray = registerRejectingValidator(
   ((val: unknown, rejectionReasons?): val is [] => {
     if (!Array.isArray(val)) {
       rejectionReasons?.(createRejection(
@@ -27,8 +27,7 @@ export const isEmptyArray: TypeValidation<[]> = registerRejectingValidator(
 
     return true
   }),
-  IS_EMPTY_ARRAY_TYPE,
-  () => isEmptyArray
+  IS_EMPTY_ARRAY_TYPE
 )
 
 export default isEmptyArray

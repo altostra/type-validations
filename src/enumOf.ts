@@ -35,7 +35,7 @@ export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<U
 
   const type = typeParts.join(' | ')
 
-  const result: TypeValidation<UnionOf<T>> = registerRejectingValidator(
+  return registerRejectingValidator(
     (val, rejectionsHandler?): val is UnionOf<T> => {
       const isValid = validValues.has(val)
 
@@ -48,11 +48,8 @@ export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<U
 
       return isValid
     },
-    type,
-    () => result
+    type
   )
-
-  return result
 }
 
 export default enumOf

@@ -10,7 +10,7 @@ import { typeOf } from './typeOf'
 export function is<T>(expectedValue: T): TypeValidation<T> {
   const type = typeOf(expectedValue)
 
-  const result: TypeValidation<T> = registerRejectingValidator(
+  return registerRejectingValidator(
     ((actualValue, rejectionReason?): actualValue is T => {
       const result = Object.is(actualValue, expectedValue)
 
@@ -23,11 +23,8 @@ export function is<T>(expectedValue: T): TypeValidation<T> {
 
       return result
     }),
-    type,
-    () => result
+    type
   )
-
-  return result
 }
 
 export default is

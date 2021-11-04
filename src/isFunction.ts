@@ -101,7 +101,7 @@ export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) 
     ? `(...args) => *`
     : `(${functionArgs(argsCount ?? 0)}) => *`
 
-  const result: TypeValidation<(...args: any[]) => any> = registerRejectingValidator(
+  return registerRejectingValidator(
     ((val, rejectionReasons?): val is ((...args: any[]) => any) => {
 
       if (typeof val !== 'function') {
@@ -123,11 +123,8 @@ export function isFunction(argsCount?: number): TypeValidation<(...args: any[]) 
 
       return true
     }),
-    funcType,
-    () => result
+    funcType
   )
-
-  return result
 }
 
 function functionArgs(count: number) {
