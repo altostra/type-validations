@@ -274,10 +274,10 @@ Arg: ${strict}`)
       }
     ), {
     strict() {
-      return validation.strict(result) as ObjectOfTypeValidation<T>
+      return validation.strict(result)
     },
     unstrict() {
-      return validation.unstrict(result) as ObjectOfTypeValidation<T>
+      return validation.unstrict(result)
     },
     propertySpec: () => (Array.isArray(propertySpec)
       ? [...propertySpec]
