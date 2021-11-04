@@ -122,9 +122,9 @@ if (isMyTuple(myTupleIncognito)) {
 
 ### Non-strict validations
 
-A non-strict *object validation* test all the propertied specified by `propertySpec`.
+A non-strict *object validation* tests all the properties specified by `propertySpec`.
 No matter how many additional properties an object has nor what values they have - 
-that object would pass non strict validation:
+that object would pass non-strict validation:
 
 ```ts
 const anObject = {
@@ -140,7 +140,7 @@ const test = isMyObject(anObject) // true
 ```
 ### Strict validations
 
-A strict *object validation* test all the propertied specified by `propertySpec`,
+A strict *object validation* tests all the properties specified by `propertySpec`,
 just like a non-strict validation does, and also validated that an object does not
 have additional properties.
 In order to pass a strict validation an object must have all the specified properties,
@@ -204,10 +204,10 @@ const isNestedStrict = isMyObject(nestedNonStrict) // true! oopsie!
 
 There are few ways to control strictness in all validated properties and levels.
 
-#### Controlling strictness on object-type validation created by `objectOf`
+#### Controlling strictness on object-type-validation created by `objectOf`
 
-If the type-validation you want to make strict (or non-strict) is an object-validation
-that is created with `objectOf`, you can simply call `validator.strict()` to create 
+If the type-validation you want to make strict (or non-strict) is an object-type-validation
+that was created with `objectOf`, you can simply call `validator.strict()` to create 
 a validation that is *strict* in all its nested properties.  
 
 ```ts
