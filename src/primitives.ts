@@ -11,7 +11,7 @@ import {
 import type { FromTypeOf, JsType } from './JSTypes'
 
 function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTypeOf<T>> {
-  const result: TypeValidation<FromTypeOf<T>> = registerRejectingValidator(
+  return registerRejectingValidator(
     ((val, rejectionReason?): val is FromTypeOf<T> => {
       if (typeof val === type) {
         return true
@@ -23,11 +23,8 @@ function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTyp
 
       return false
     }),
-    type,
-    () => result
+    type
   )
-
-  return result
 }
 
 export type ErrFactory = (val: unknown, rejections: ValidationRejection[]) => any

@@ -1,5 +1,5 @@
 import { TypeValidation } from './Common'
-import { objectOf, ObjectOrTupleValidations } from './objectOf'
+import { objectOf, ObjectOfTypeValidation, ObjectOrTupleValidations } from './objectOf'
 
 
 /**
@@ -11,7 +11,7 @@ import { objectOf, ObjectOrTupleValidations } from './objectOf'
  */
 export function tupleOf<T extends any[]>(
   ...validations: ObjectOrTupleValidations<T>
-): TypeValidation<T> {
+): ObjectOfTypeValidation<T> {
   return objectOf<T>(validations, { strict: true })
 }
 

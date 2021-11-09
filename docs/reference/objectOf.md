@@ -3,6 +3,69 @@
 Creates *type-validation* that checks if a value is an object that all its properties
 are validated with the provided validations.
 
+## Usage examples
+The following example shows some validations and their expected result
+
+```ts
+interface Wrapper {
+  nested: Nested
+}
+interface Nested {
+  prop: string
+}
+
+// In the following examples, `isNested` is not defined as strict
+const isNested = objectOf({
+  prop: string,
+})
+
+const isWrapper = objectOf({
+  nested: isNested,
+})
+const isWrapperStrict = objectOf({
+  nested: isNested,
+}, { strict: true })
+const isWrapperDeepStrict = isWrapper.strict()
+
+const nested = {
+  prop: 'a',
+}
+const extendedNested = {
+  prop: 'a',
+  otherProp: 1,
+}
+
+const strictlyWrapper = {
+  nested,
+}
+const wrapper = {
+  // But using extended nested object
+  nested: extendedNested,
+}
+const extendedWrapper = {
+  // But using a 'strict' nested value
+  nested,
+  other: 'any value',
+}
+
+// Non-strict validations pass all objects that are assignable to their validated type.
+isWrapper(strictlyWrapper) // true
+isWrapper(wrapper) // true
+isWrapper(extendedWrapper) // true
+
+// Strict validations pass only object that are assignable to their validated type
+// AND have NO extraneous properties.
+isWrapperStrict(strictlyWrapper) // true
+isWrapperStrict(wrapper) // true
+isWrapperStrict(extendedWrapper) // false
+
+// Deep strict validations pass only object that are assignable to their validated type
+// AND have NO extraneous properties, and recursively in all their nested objects.
+isWrapperDeepStrict(strictlyWrapper) // true
+isWrapperDeepStrict(wrapper) // false
+isWrapperDeepStrict(extendedWrapper) // false
+```
+
 ## Type parameters
 
 ### `T` 
