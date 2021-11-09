@@ -16,7 +16,7 @@ export type Assertion<T> = (val: unknown) => asserts val is T
  */
 export function assertBy<T>(
   validation: AnyTypeValidation<T>,
-  errFactory: (val: unknown, rejetions: ValidationRejection[]) => unknown
+  errFactory: (val: unknown, rejections: ValidationRejection[]) => unknown
 ): Assertion<T> {
   errFactory = errFactory
 

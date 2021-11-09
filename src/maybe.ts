@@ -1,4 +1,4 @@
-import { AnyTypeValidation, TypeValidation } from './Common'
+import { AnyTypeValidation, transformValidation, TypeValidation } from './Common'
 import {
   asRejectingValidator,
   createRejection,
@@ -32,27 +32,31 @@ export function maybe<T, TWithNull extends boolean = false>(
   const type = `?(${nullType})`
 
   return registerRejectingValidator(
-    (value: unknown, rejectionReasone?): value is NullableType<T, TWithNull> => {
-      const rejections = rejectionReasone && createRejectionsCollector()
+    (value: unknown, rejectionReason?): value is NullableType<T, TWithNull> => {
+      const rejections = rejectionReason && createRejectionsCollector()
 
       const result = value === undefined ||
         (withNull && value === null) ||
         rejector(value, rejections)
 
-      if (!result && rejectionReasone) {
-        rejectionReasone(createRejection(
+      if (!result && rejectionReason) {
+        rejectionReason(createRejection(
           withNull
             ? rejectionMessage`Value ${value} is not ${undefined}, ${null}, nor ${literal(nullType)}`
             : rejectionMessage`Value ${value} is not ${undefined} nor ${literal(nullType)}`,
           type
         ))
 
-        rejections?.forEach(rejection => rejectionReasone(rejection))
+        rejections?.forEach(rejection => rejectionReason(rejection))
       }
 
       return result
     },
-    type
+    type,
+    (transformation, args) => maybe(
+      rejector[transformValidation](transformation, args),
+      withNull
+    )
   )
 }
 

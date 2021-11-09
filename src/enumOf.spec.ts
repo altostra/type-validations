@@ -11,7 +11,7 @@ import {
   string,
   symbol,
   undefinedValidation
-} from './primitives'
+  } from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
 import { expect } from 'chai'
@@ -61,13 +61,13 @@ describe('enumOf type-validation', () => {
       })
     })
 
-    it('Shoud not call callback if value validates successfuly', () => {
+    it('Should not call callback if value validates successfully', () => {
       enumOfTest(1, callback)
 
       expect(callback.callCount).to.be.equal(0)
     })
 
-    it('Shoud call callback for all failure if values fails', () => {
+    it('Should call callback for all failure if values fails', () => {
       enumOfTest(true, callback)
 
       expect(callback.callCount).to.be.equal(1)

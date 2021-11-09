@@ -10,7 +10,7 @@ Value to validate
 **Type:** `unknown`
 
 ### `rejectionReasons`
-Optional callback that would be called with validaton rejecton reasons.  
+Optional callback that would be called with validation rejection reasons.  
 
 - When validation succeeds - `rejectionReasons` would **not** be invoked.
 - When validation fails - `rejectionReasons` would be invoked **at least once**
@@ -26,10 +26,10 @@ A description of the validated type
 ## Methods
 
 ### `asPredicate(): (value: unknown) => boolean`
-Returns a predicate (no second arguemnt) for the specified validator.
+Returns a predicate (no second argument) for the specified validator.
 
 ### `asPredicate(): (value: unknown) => value is []`
-Returns a type-guard predicate (no second arguemnt) for the specified validator.
+Returns a type-guard predicate (no second argument) for the specified validator.
 
 ## Example
 

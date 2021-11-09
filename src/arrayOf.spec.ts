@@ -33,34 +33,34 @@ describe('arrayOf type-validation', () => {
       })
     })
 
-    describe('When value validates successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value validates successfully', () => {
+      it('Should not call callback', () => {
         arrayOfTest(['str1'], callback)
 
         expect(callback.callCount).to.be.equal(0)
       })
     })
 
-    describe('When value validates unsuccessfuly', () => {
-      it('Shoud call callback once if value is not an array', () => {
+    describe('When value validates unsuccessfully', () => {
+      it('Should call callback once if value is not an array', () => {
         arrayOfTest('str', callback)
 
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once', () => {
+      it('Should call callback once', () => {
         arrayOfTest(['str', 2], callback)
 
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once value fails many validations', () => {
+      it('Should call callback once value fails many validations', () => {
         arrayOfTest([1, 2], callback)
 
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud set correct path for validations', () => {
+      it('Should set correct path for validations', () => {
         arrayOfTest(['str1', '2', 3], callback)
 
         expect(callback.args[0][0].path).to.be.deep.equal([2])

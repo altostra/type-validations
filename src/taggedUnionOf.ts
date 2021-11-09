@@ -3,6 +3,7 @@ import {
   AnyTypeValidation,
   isObject,
   NotEmptyArray,
+  transformValidation,
   TypeValidation
   } from './Common'
 import {
@@ -321,7 +322,12 @@ export function taggedUnionOf<
 ${literal(reason)}`
       })))
     },
-    type
+    type,
+    (transformation, args) => taggedUnionOf(type, new Map(
+      from(specMap).pipe(
+        map(([key, validation]) => [key, validation[transformValidation](transformation, args)])
+      )
+    ))
   ) as TaggedUnionValidation<TUnion, TKey, TTag>
 
   result.unionSpec = () => specMap

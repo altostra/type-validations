@@ -9,6 +9,7 @@ import {
   } from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
+import { allOf } from '.'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
@@ -21,6 +22,15 @@ describe('objectOf type-validation', () => {
     num: number,
     str: string,
   }, { strict: false })
+  const madeStrict = nonStrict.strict()
+  const madeUnstrict = strict.unstrict()
+  const deepStrict = objectOf.strict(
+    allOf(nonStrict)
+  )
+  const deepUnstrict = objectOf.unstrict(
+    allOf(strict)
+  )
+
   const strictObj = {
     num: 5,
     str: 'a-string',
@@ -40,6 +50,16 @@ describe('objectOf type-validation', () => {
       expect(strict(nonStrictObj)).to.be.false
       expect(nonStrict(strictObj)).to.be.true
       expect(nonStrict(nonStrictObj)).to.be.true
+
+      expect(madeStrict(strictObj)).to.be.true
+      expect(madeStrict(nonStrictObj)).to.be.false
+      expect(madeUnstrict(strictObj)).to.be.true
+      expect(madeUnstrict(nonStrictObj)).to.be.true
+
+      expect(deepStrict(strictObj)).to.be.true
+      expect(deepStrict(nonStrictObj)).to.be.false
+      expect(deepUnstrict(strictObj)).to.be.true
+      expect(deepUnstrict(nonStrictObj)).to.be.true
 
       expect(strictTuple(strictTupleArr)).to.be.true
       expect(strictTuple(nonStrictTupleArr)).to.be.false
@@ -89,7 +109,7 @@ describe('objectOf type-validation', () => {
 ]`)
       })
 
-      it('Should have shortened type when object type has a lot of peroperties', () => {
+      it('Should have shortened type when object type has a lot of properties', () => {
         interface ValidatedType {
           s: string
           n: number
@@ -168,8 +188,8 @@ describe('objectOf type-validation', () => {
       })
     })
 
-    describe('When value validates successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value validates successfully', () => {
+      it('Should not call callback', () => {
         strict(strictObj, callback)
         nonStrict(strictObj, callback)
         strictTuple(strictTupleArr, callback)
@@ -179,14 +199,34 @@ describe('objectOf type-validation', () => {
       })
     })
 
-    describe('When value validates unsuccessfuly', () => {
-      it('Shoud call callback once if value is not an object', () => {
+    describe('When value validates unsuccessfully', () => {
+      it('Should call callback once if value is not an object', () => {
         strict('str', callback)
         expect(callback.callCount).to.be.equal(1)
 
         callback.resetHistory()
 
         nonStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        madeStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        madeUnstrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        deepStrict('str', callback)
+        expect(callback.callCount).to.be.equal(1)
+
+        callback.resetHistory()
+
+        deepUnstrict('str', callback)
         expect(callback.callCount).to.be.equal(1)
 
         callback.resetHistory()
@@ -200,7 +240,7 @@ describe('objectOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once if tuple value is not an array', () => {
+      it('Should call callback once if tuple value is not an array', () => {
         strictTuple({ 0: 5, 1: 'str', length: 2 }, callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -210,7 +250,7 @@ describe('objectOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once', () => {
+      it('Should call callback once', () => {
         strict({ num: 'str', str: 'a' }, callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -230,7 +270,7 @@ describe('objectOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once value fails many validations', () => {
+      it('Should call callback once value fails many validations', () => {
         strict({ num: 'str', str: 5 }, callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -250,7 +290,7 @@ describe('objectOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud set correct path for validations', () => {
+      it('Should set correct path for validations', () => {
         strict({ num: 4, str: 'ab', other: true }, callback)
         expect(callback.args[0][0].path).to.be.deep.equal(['other'])
 

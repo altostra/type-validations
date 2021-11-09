@@ -50,8 +50,8 @@ describe('recordOf type-validation', () => {
       })
     })
 
-    describe('When value validates successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value validates successfully', () => {
+      it('Should not call callback', () => {
         recordOfTest({ prop: 'str1' }, callback)
         recordOfKeyTest({ p: 'str1' }, callback)
 
@@ -59,8 +59,8 @@ describe('recordOf type-validation', () => {
       })
     })
 
-    describe('When value validates unsuccessfuly', () => {
-      it('Shoud call callback once if value is not an object', () => {
+    describe('When value validates unsuccessfully', () => {
+      it('Should call callback once if value is not an object', () => {
         recordOfTest('str', callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -70,7 +70,7 @@ describe('recordOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once', () => {
+      it('Should call callback once', () => {
         recordOfTest({ a: 'str', b: !'str' }, callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -80,7 +80,7 @@ describe('recordOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud call callback once value fails many validations', () => {
+      it('Should call callback once value fails many validations', () => {
         recordOfTest({ a: 1, b: 2 }, callback)
         expect(callback.callCount).to.be.equal(1)
 
@@ -90,7 +90,7 @@ describe('recordOf type-validation', () => {
         expect(callback.callCount).to.be.equal(1)
       })
 
-      it('Shoud set correct path for validations', () => {
+      it('Should set correct path for validations', () => {
         recordOfTest({ a: 'str', b: !'str' }, callback)
         expect(callback.args[0][0].path).to.be.deep.equal(['b'])
 

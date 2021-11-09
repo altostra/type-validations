@@ -120,5 +120,5 @@ if (isSmallPet(unknown, console.log)) {
     unknown.layEggs()
 }
 
-// Either lay egges message or rejection
+// Either lay eggs message or rejection
 ```

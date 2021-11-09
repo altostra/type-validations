@@ -10,7 +10,7 @@ Value to validate
 **Type:** `unknown`
 
 ### `rejectionReasons`
-Optional callback that would be called with validaton rejecton reasons.  
+Optional callback that would be called with validation rejection reasons.  
 
 - When validation succeeds - `rejectionReasons` would **not** be invoked.
 - When validation fails - `rejectionReasons` would be invoked **at least once**
@@ -26,10 +26,10 @@ A description of the validated type
 ## Methods
 
 ### `asPredicate(): (value: unknown) => boolean`
-Returns a predicate (no second arguemnt) for the specified validator.
+Returns a predicate (no second argument) for the specified validator.
 
 ### `asPredicate(): (value: unknown) => value is Record<never, unknown>`
-Returns a type-guard predicate (no second arguemnt) for the specified validator.
+Returns a type-guard predicate (no second argument) for the specified validator.
 
 ## Example
 
@@ -49,11 +49,11 @@ console.log(isEmptyObject('A', console.log)) /* {
 false */
 console.log(isEmptyObject({ prop: undefined }, console.log))  /* {
   path: [],
-  reason: 'Object <{ prop: undefined }> is not emtpy',
+  reason: 'Object <{ prop: undefined }> is not empty',
   propertyType: '{}'
 }
 false */
-console.log(isEmptyObject([0], console.log)) /* { path: [], reason: 'Object <[ 0 ]> is not emtpy', propertyType: '{}' }
+console.log(isEmptyObject([0], console.log)) /* { path: [], reason: 'Object <[ 0 ]> is not empty', propertyType: '{}' }
 false */
 
 const incognito: unknown = {}

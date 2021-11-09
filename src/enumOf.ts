@@ -50,7 +50,6 @@ export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<U
     },
     type
   )
-  // return anyOf(...values.map(is))
 }
 
 export default enumOf

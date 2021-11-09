@@ -43,8 +43,8 @@ describe('maybe type-validation', () => {
       })
     })
 
-    describe('When value is being validated successfuly', () => {
-      it('Shoud not call callback', () => {
+    describe('When value is being validated successfully', () => {
+      it('Should not call callback', () => {
         maybeTest('str', callback)
         expect(callback.callCount).to.be.equal(0)
 
@@ -55,8 +55,8 @@ describe('maybe type-validation', () => {
       })
     })
 
-    describe('When value is not being validated successfuly', () => {
-      it('Shoud call callback for all failures', () => {
+    describe('When value is not being validated successfully', () => {
+      it('Should call callback for all failures', () => {
         maybeTest(true, callback)
         expect(callback.callCount).to.be.equal(2)
 
@@ -66,7 +66,7 @@ describe('maybe type-validation', () => {
         expect(callback.callCount).to.be.equal(2)
       })
 
-      it('Shoud set correct type for validations', () => {
+      it('Should set correct type for validations', () => {
         maybeTest(true, callback)
         expect(callback.args[0][0].propertyType).to.be.equal(maybeTest[typeValidatorType])
 

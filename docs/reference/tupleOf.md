@@ -53,9 +53,9 @@ console.log(isMyTuple([123, 'a-string', 5], console.log)) /* {
 }
 false */
 
-const myTupleIncofnito: unknown = ['str', 6]
+const myTupleIncognito: unknown = ['str', 6]
 
-if (isMyTuple(myTupleIncofnito)) {
-    console.log(myTupleIncofnito[1]) // 6
+if (isMyTuple(myTupleIncognito)) {
+    console.log(myTupleIncognito[1]) // 6
 }
 ```
