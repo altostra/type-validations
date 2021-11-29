@@ -40,7 +40,7 @@ export const transformValidation = Symbol('transform')
  */
 export interface TypeValidation<T> extends TypeValidationFunc<T> {
   /**A description of the validated type */
-  [typeValidatorType]: string
+  readonly [typeValidatorType]: string
   /**
    * Returns a predicate (no second argument) for the specified validator
    * @returns A predicate (no second argument) for the specified validator

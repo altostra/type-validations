@@ -6,7 +6,7 @@ import {
   transformValidation,
   TypeValidation,
   TypeValidationFunc
-  } from './Common'
+} from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
@@ -92,15 +92,24 @@ export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boole
  */
 export function registerRejectingValidator<T>(
   validator: TypeValidationFunc<T>,
-  type: string,
+  type: string | (() => string),
   transform?: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 ): TypeValidation<T> {
   Object.assign(validator, {
-    [typeValidatorType]: type,
     asPredicate,
     asTypePredicate: asPredicate,
     [transformValidation]: transform ?? (() => validator),
+  }, typeof type === 'string' && {
+    [typeValidatorType]: type,
   })
+
+  if (typeof type !== 'string') {
+    Object.defineProperty(validator, typeValidatorType, {
+      enumerable: true,
+      configurable: true,
+      get: type,
+    })
+  }
 
   return validator as TypeValidation<T>
 }
