@@ -74,7 +74,7 @@ are validated with the provided validations.
 ### [`recordOf`](./docs/reference/recordOf.md)
 
 Creates *type-validator* that checks that a given value is an object and that
-all its properties are of a specific type.
+all its own-enumerable properties are of a specified type.
 
 ### [`singleOrArray`](./docs/reference/singleOrArray.md)
 
