@@ -1,7 +1,7 @@
 # `recordOf`
 
 Creates *type-validator* that checks that a given value is an object and that
-all its properties are of a specific type.
+all its own-enumerable properties are of a specified type.
 
 ## Type parameters
 
