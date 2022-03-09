@@ -323,7 +323,7 @@ ${literal(reason)}`
       })))
     },
     type,
-    (transformation, args) => taggedUnionOf(type, new Map(
+    (transformation, args) => taggedUnionOf(tagKey, new Map(
       from(specMap).pipe(
         map(([key, validation]) => [key, validation[transformValidation](transformation, args)])
       )
