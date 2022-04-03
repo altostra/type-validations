@@ -1,4 +1,4 @@
-import { transformValidation, TypeValidation } from './Common'
+import { transformValidation, TypeValidation, TypeValidationFunc } from './Common'
 import { asRejectingValidator, createRejection, registerRejectingValidator } from './RejectionReasons'
 import { AnyTypeValidation, typeValidatorType } from '.'
 
@@ -53,38 +53,40 @@ export function withRecursion<T>(
 
   let result: TypeValidation<T>
   const type = () => `↻(${result[typeValidatorType]})`
+  const resultReferenceFunc: TypeValidationFunc<T> = (value, reject): value is T => {
+    if (result === undefined) {
+      throw new Error('Recursive validation reference must not be called before initialization')
+    }
+
+    try {
+      incGlobal()
+
+      if (maxDepth && currentGlobalDepth! > maxDepth) {
+        reject?.(createRejection('Recursion max depth has reached', type()))
+        return false
+      }
+      else if (skipDepth && currentGlobalDepth! > skipDepth) {
+        // Skip farther validations
+        return true
+      }
+
+      return result(value, reject)
+    }
+    finally {
+      decGlobal()
+
+      if (currentGlobalDepth === 0 && !hasGlobal) {
+        currentGlobalDepth = undefined
+      }
+    }
+  }
   const resultReference = registerRejectingValidator(
-    (value: unknown, reject): value is T => {
-      if (result === undefined) {
-        throw new Error('Recursive validation reference must not be called before initialization')
-      }
-
-      try {
-        incGlobal()
-
-        if (maxDepth && currentGlobalDepth! > maxDepth) {
-          reject?.(createRejection('Recursion max depth has reached', type()))
-        }
-        else if (skipDepth && currentGlobalDepth! > skipDepth) {
-          // Skip farther validations
-          return true
-        }
-
-        return result(value, reject)
-      }
-      finally {
-        decGlobal()
-
-        if (currentGlobalDepth === 0 && !hasGlobal) {
-          currentGlobalDepth = undefined
-        }
-      }
-    },
-    type,
+    resultReferenceFunc,
+    '↻(Recursive)',
     (transformation, args) => result[transformValidation](transformation, args)
   )
 
-  result = asRejectingValidator(factory(resultReference))
+  result = asRejectingValidator(factory(resultReference), type)
 
   return result
 }

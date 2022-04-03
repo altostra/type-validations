@@ -1,8 +1,8 @@
 import anyOf from './anyOf'
-import { any, number, string } from './primitives'
+import { number, string } from './primitives'
 import recordOf from './recordOf'
 import { ValidationRejection } from './RejectionReasons'
-import { withRecursion, WithRecursionOptions } from './withRecusion'
+import { withRecursion, WithRecursionOptions } from './withRecursion'
 import { expect } from 'chai'
 
 describe('With recursion type-validation', () => {
@@ -96,10 +96,48 @@ describe('With recursion type-validation', () => {
 
           expect(isRecursive(invalid1, rej => rejections1.push(rej)), 'depth1').to.be.false
           expect(rejections1).to.deep.equal([{
+            path: ['key'],
+            propertyType: 'string',
+            reason: 'Value <5> is not a string',
+          }, {
+            path: ['key'],
+            propertyType: '{ [*]: string | ↻(Recursive) }',
+            reason: 'Value <5> is not an object',
           }])
 
           expect(isRecursive(invalid3, rej => rejections3.push(rej)), 'depth3').to.be.false
           expect(rejections3).to.deep.equal([{
+            path: [
+              'key3',
+              'key2',
+              'key1',
+            ],
+            propertyType: 'string',
+            reason: 'Value <5> is not a string',
+          },
+          {
+            path: [
+              'key3',
+              'key2',
+              'key1',
+            ],
+            propertyType: '{ [*]: string | ↻(Recursive) }',
+            reason: 'Value <5> is not an object',
+          },
+          {
+            path: [
+              'key2',
+              'key1',
+            ],
+            propertyType: 'string',
+            reason: 'Value <{ key3: 5 }> is not a string',
+          },
+          {
+            path: [
+              'key1',
+            ],
+            propertyType: 'string',
+            reason: 'Value <{ key2: { key3: 5 } }> is not a string',
           }])
         })
       })

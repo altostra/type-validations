@@ -6,7 +6,7 @@ import {
   transformValidation,
   TypeValidation,
   TypeValidationFunc
-} from './Common'
+  } from './Common'
 import { concat } from '@reactivex/ix-es2015-cjs/iterable/concat'
 import { from } from '@reactivex/ix-es2015-cjs/iterable/from'
 import { map } from '@reactivex/ix-es2015-cjs/iterable/operators/map'
@@ -165,7 +165,9 @@ export function setValidatorRejection<T>(
  * @param validator The validator to convert to full type-validator
  * @returns A full type-validator (of a custom type)
  */
-export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeValidation<T> {
+export function asRejectingValidator<T>(
+  validator: AnyTypeValidation<T>,
+  type?: string | (() => string)): TypeValidation<T> {
   if (isTypeValidation(validator)) {
     return validator
   }
@@ -200,7 +202,7 @@ export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeVa
 
   const resultValidator: TypeValidation<T> = registerRejectingValidator(
     result,
-    typeName(result),
+    type ?? typeName(result),
     () => resultValidator
   )
 
