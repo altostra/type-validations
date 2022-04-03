@@ -1,4 +1,4 @@
-import { isObject, TypeValidation } from './Common'
+import { isObject, transformValidation, TypeValidation } from './Common'
 import is from './is'
 import objectOf from './objectOf'
 import { boolean, number, string } from './primitives'
@@ -50,6 +50,7 @@ describe('taggedUnionOf type-validation', () => {
     isABByObj.unionSpec(),
     isCDByMap.unionSpec(),
   )
+  const isABCDTransformed = isABCDCombined[transformValidation](Symbol('any-transformation'), [])
 
   describe('When no reasons are expected', () => {
     describe('And the validated value is a primitive', () => {
@@ -68,6 +69,12 @@ describe('taggedUnionOf type-validation', () => {
       describe('While using combined spec', () => {
         it('Should be rejected', () => {
           primitivesChecks(isABCDCombined, invalidPrimitives)
+        })
+      })
+
+      describe('While using transformed spec', () => {
+        it('Should be rejected', () => {
+          primitivesChecks(isABCDTransformed, invalidPrimitives)
         })
       })
     })
@@ -94,6 +101,12 @@ describe('taggedUnionOf type-validation', () => {
           expect(isABCDCombined(value)).to.be.false
         })
       })
+
+      describe('While using transformed validator', () => {
+        it('Should be rejected', () => {
+          expect(isABCDTransformed(value)).to.be.false
+        })
+      })
     })
 
     describe('And the validated value has unknown tag', () => {
@@ -117,6 +130,12 @@ describe('taggedUnionOf type-validation', () => {
       describe('While using combined spec', () => {
         it('Should be rejected', () => {
           expect(isABCDCombined(value)).to.be.false
+        })
+      })
+
+      describe('While using transformed validation', () => {
+        it('Should be rejected', () => {
+          expect(isABCDTransformed(value)).to.be.false
         })
       })
     })
@@ -149,6 +168,13 @@ describe('taggedUnionOf type-validation', () => {
           expect(isABCDCombined(cdValue)).to.be.false
         })
       })
+
+      describe('While using transformed validation', () => {
+        it('Should be rejected', () => {
+          expect(isABCDTransformed(abValue)).to.be.false
+          expect(isABCDTransformed(cdValue)).to.be.false
+        })
+      })
     })
 
     describe('And the validated value has a known tag and valid shape', () => {
@@ -177,6 +203,13 @@ describe('taggedUnionOf type-validation', () => {
         it('Should be rejected', () => {
           expect(isABCDCombined(abValue)).to.be.true
           expect(isABCDCombined(cdValue)).to.be.true
+        })
+      })
+
+      describe('While using transformed validation', () => {
+        it('Should be rejected', () => {
+          expect(isABCDTransformed(abValue)).to.be.true
+          expect(isABCDTransformed(cdValue)).to.be.true
         })
       })
     })
@@ -271,6 +304,40 @@ describe('taggedUnionOf type-validation', () => {
           expect(rejections.asArray()).to.deep.equal(expected)
         })
       })
+
+      describe('While using transformed validation', () => {
+        const rejections = createRejectionsCollector()
+
+        // We assume the expected result is a single element tuple, as `taggedUnionOf` suppose to
+        // never emit more than one rejection on its own (not emerging from deeper validations)
+        const expected: [ValidationRejection] = [{
+          reason: rejectionMessage`Value ${validated} is not an object`,
+          path: [],
+          propertyType: `{
+  tag: 'a',
+  string: string,
+  [*]: *
+} | {
+  tag: 'b',
+  num: number,
+  [*]: *
+} | {
+  tag: 'c',
+  bool: boolean,
+  [*]: *
+} | {
+  tag: 'd',
+  obj: * (isObject),
+  [*]: *
+}`
+        }]
+
+        it('Should be rejected', () => {
+          isABCDTransformed(validated, rejections)
+
+          expect(rejections.asArray()).to.deep.equal(expected)
+        })
+      })
     })
 
     describe('And the validated value has no tag', () => {
@@ -359,6 +426,40 @@ describe('taggedUnionOf type-validation', () => {
 
         it('Should be rejected', () => {
           isABCDCombined(validated, rejections)
+
+          expect(rejections.asArray()).to.deep.equal(expected)
+        })
+      })
+
+      describe('While using transformed validation', () => {
+        const rejections = createRejectionsCollector()
+
+        // We assume the expected result is a single element tuple, as `taggedUnionOf` suppose to
+        // never emit more than one rejection on its own (not emerging from deeper validations)
+        const expected: [ValidationRejection] = [{
+          reason: rejectionMessage`Value ${validated} has an invalid tag ${undefined}`,
+          path: [],
+          propertyType: `{
+  tag: 'a',
+  string: string,
+  [*]: *
+} | {
+  tag: 'b',
+  num: number,
+  [*]: *
+} | {
+  tag: 'c',
+  bool: boolean,
+  [*]: *
+} | {
+  tag: 'd',
+  obj: * (isObject),
+  [*]: *
+}`
+        }]
+
+        it('Should be rejected', () => {
+          isABCDTransformed(validated, rejections)
 
           expect(rejections.asArray()).to.deep.equal(expected)
         })
@@ -456,6 +557,40 @@ describe('taggedUnionOf type-validation', () => {
           expect(rejections.asArray()).to.deep.equal(expected)
         })
       })
+
+      describe('While using transformed validation', () => {
+        const rejections = createRejectionsCollector()
+
+        // We assume the expected result is a single element tuple, as `taggedUnionOf` suppose to
+        // never emit more than one rejection on its own (not emerging from deeper validations)
+        const expected: [ValidationRejection] = [{
+          reason: rejectionMessage`Value ${validated} has an invalid tag ${'e'}`,
+          path: [],
+          propertyType: `{
+  tag: 'a',
+  string: string,
+  [*]: *
+} | {
+  tag: 'b',
+  num: number,
+  [*]: *
+} | {
+  tag: 'c',
+  bool: boolean,
+  [*]: *
+} | {
+  tag: 'd',
+  obj: * (isObject),
+  [*]: *
+}`
+        }]
+
+        it('Should be rejected', () => {
+          isABCDTransformed(validated, rejections)
+
+          expect(rejections.asArray()).to.deep.equal(expected)
+        })
+      })
     })
 
     describe('And the validated value has a known tag with a valid shape', () => {
@@ -514,6 +649,19 @@ Value ${undefined} is not a boolean`,
           expect(cdRejections.asArray()).to.deep.equal(cdExpected)
         })
       })
+
+      describe('While using transformed validation', () => {
+        const abRejections = createRejectionsCollector()
+        const cdRejections = createRejectionsCollector()
+
+        it('Should be rejected', () => {
+          isABCDTransformed(abValidated, abRejections)
+          isABCDTransformed(cdValidated, cdRejections)
+
+          expect(abRejections.asArray()).to.deep.equal(abExpected)
+          expect(cdRejections.asArray()).to.deep.equal(cdExpected)
+        })
+      })
     })
 
     describe('And the validated value has a known tag and valid shape', () => {
@@ -555,6 +703,19 @@ Value ${undefined} is not a boolean`,
         it('Should be rejected', () => {
           isABCDCombined(abValidated, abRejections)
           isABCDCombined(cdValidated, cdRejections)
+
+          expect(abRejections.asArray()).to.deep.equal(expected)
+          expect(cdRejections.asArray()).to.deep.equal(expected)
+        })
+      })
+
+      describe('While using transformed validation', () => {
+        const abRejections = createRejectionsCollector()
+        const cdRejections = createRejectionsCollector()
+
+        it('Should be rejected', () => {
+          isABCDTransformed(abValidated, abRejections)
+          isABCDTransformed(cdValidated, cdRejections)
 
           expect(abRejections.asArray()).to.deep.equal(expected)
           expect(cdRejections.asArray()).to.deep.equal(expected)
