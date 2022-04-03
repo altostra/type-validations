@@ -151,7 +151,8 @@ describe('With recursion type-validation', () => {
         })
 
         it('Should accept a deep value regardless of validity', () => {
-          expect(isRecursive(invalid3), 'depth3').to.be.true
+          expect(isRecursive(depth3), 'depth3').to.be.true
+          expect(isRecursive(invalid3), 'invalid3').to.be.true
         })
 
         it('Should reject invalid values', () => {
@@ -178,9 +179,9 @@ describe('With recursion type-validation', () => {
         })
 
         it('Should reject a deep value regardless of validity', () => {
-          const rejections: ValidationRejection[] = []
-          expect(isRecursive(invalid3, rej => rejections.push(rej)), 'depth3').to.be.false
-          expect(rejections).to.deep.equal([{
+          const invalidRejections: ValidationRejection[] = []
+          expect(isRecursive(invalid3, rej => invalidRejections.push(rej)), 'invalid3').to.be.false
+          expect(invalidRejections).to.deep.equal([{
             path: [
               'key2',
               'key1'
@@ -202,6 +203,32 @@ describe('With recursion type-validation', () => {
             ],
             propertyType: 'string',
             reason: 'Value <{ key2: { key3: 5 } }> is not a string',
+          }])
+
+          const validRejections: ValidationRejection[] = []
+          expect(isRecursive(depth3, rej => validRejections.push(rej)), 'depth3').to.be.false
+          expect(validRejections).to.deep.equal([{
+            path: [
+              'key2',
+              'key1'
+            ],
+            propertyType: 'string',
+            reason: "Value <{ key3: 'string' }> is not a string",
+          },
+          {
+            path: [
+              'key2',
+              'key1',
+            ],
+            propertyType: '↻({ [*]: string | ↻(Recursive) })',
+            reason: 'Recursion max depth has reached at 2',
+          },
+          {
+            path: [
+              'key1'
+            ],
+            propertyType: 'string',
+            reason: "Value <{ key2: { key3: 'string' } }> is not a string",
           }])
         })
 
@@ -381,7 +408,8 @@ describe('With recursion type-validation', () => {
         })
 
         it('Should accept a deep value regardless of validity', () => {
-          expect(isRecursive(invalid3), 'depth3').to.be.true
+          expect(isRecursive(depth3), 'depth3').to.be.true
+          expect(isRecursive(invalid3), 'invalid3').to.be.true
         })
 
         it('Should reject invalid values', () => {
@@ -413,9 +441,9 @@ describe('With recursion type-validation', () => {
         })
 
         it('Should reject a deep value regardless of validity', () => {
-          const rejections: ValidationRejection[] = []
-          expect(isRecursive(invalid3, rej => rejections.push(rej)), 'depth3').to.be.false
-          expect(rejections).to.deep.equal([{
+          const invalidRejections: ValidationRejection[] = []
+          expect(isRecursive(invalid3, rej => invalidRejections.push(rej)), 'invalid3').to.be.false
+          expect(invalidRejections).to.deep.equal([{
             path: [
               'a3',
               'b2',
@@ -443,6 +471,53 @@ describe('With recursion type-validation', () => {
             ],
             propertyType: 'string',
             reason: 'Value <{ key2: 2, a3: { key3: 3, b3: [Object] } }> is not a string',
+          },
+          {
+            path: [
+              'a2',
+              'b1',
+            ],
+            propertyType: 'number',
+            reason: "Value <{ key2: 'string', b2: { key2: 2, a3: [Object] } }> is not a number",
+          },
+          {
+            path: [
+              'b1'
+            ],
+            propertyType: 'string',
+            reason: "Value <{ key1: 5, a2: { key2: 'string', b2: [Object] } }> is not a string",
+          }])
+
+          const validRejections: ValidationRejection[] = []
+          expect(isRecursive(depth3, rej => validRejections.push(rej)), 'depth3').to.be.false
+          expect(validRejections).to.deep.equal([{
+            path: [
+              'a3',
+              'b2',
+              'a2',
+              'b1',
+            ],
+            propertyType: 'number',
+            reason: "Value <{ key3: 'string', b3: { key3: 3 } }> is not a number",
+          },
+          {
+            path: [
+              'a3',
+              'b2',
+              'a2',
+              'b1',
+            ],
+            propertyType: '↻({ [*]: string | { [*]: number | ↻(Recursive) } })',
+            reason: 'Recursion max depth has reached at 2',
+          },
+          {
+            path: [
+              'b2',
+              'a2',
+              'b1',
+            ],
+            propertyType: 'string',
+            reason: "Value <{ key2: 2, a3: { key3: 'string', b3: [Object] } }> is not a string",
           },
           {
             path: [
