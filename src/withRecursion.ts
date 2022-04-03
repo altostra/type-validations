@@ -27,7 +27,7 @@ export type WithRecursionOptions =
   | WithRecursionSkipOptions
 
 
-let currentGlobalDepth: number | undefined = undefined
+let currentGlobalDepth = 0
 
 /**
  * A function to generate a type validation. The function's params
@@ -61,11 +61,11 @@ export function withRecursion<T>(
     try {
       incGlobal()
 
-      if (maxDepth && currentGlobalDepth! > maxDepth) {
-        reject?.(createRejection('Recursion max depth has reached', type()))
+      if (maxDepth && currentGlobalDepth! >= maxDepth) {
+        reject?.(createRejection(`Recursion max depth has reached at ${maxDepth}`, type()))
         return false
       }
-      else if (skipDepth && currentGlobalDepth! > skipDepth) {
+      else if (skipDepth && currentGlobalDepth! >= skipDepth) {
         // Skip farther validations
         return true
       }
@@ -74,10 +74,6 @@ export function withRecursion<T>(
     }
     finally {
       decGlobal()
-
-      if (currentGlobalDepth === 0 && !hasGlobal) {
-        currentGlobalDepth = undefined
-      }
     }
   }
   const resultReference = registerRejectingValidator(
@@ -122,18 +118,11 @@ function validateOptions(options: WithRecursionOptions = {}): WithRecursionOptio
 }
 
 function incGlobal() {
-  if (typeof currentGlobalDepth === 'number') {
-    currentGlobalDepth++
-  }
-
-  return currentGlobalDepth
+  return ++currentGlobalDepth
 }
 
 function decGlobal() {
-  if (
-    typeof currentGlobalDepth === 'number' &&
-    currentGlobalDepth > 0
-  ) {
+  if (currentGlobalDepth > 0) {
     currentGlobalDepth--
   }
 
