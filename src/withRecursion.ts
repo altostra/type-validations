@@ -1,4 +1,7 @@
+import anyOf from './anyOf'
 import { transformValidation, TypeValidation, TypeValidationFunc } from './Common'
+import objectOf from './objectOf'
+import { maybeNumber, number, undefinedValidation } from './primitives'
 import { asRejectingValidator, createRejection, registerRejectingValidator } from './RejectionReasons'
 import { AnyTypeValidation, typeValidatorType } from '.'
 
@@ -26,7 +29,19 @@ export type WithRecursionOptions =
   | WithRecursionMaxOptions
   | WithRecursionSkipOptions
 
+const isWithRecursionOptions = anyOf(
+  objectOf<WithRecursionMaxOptions>({
+    maxDepth: maybeNumber,
+    skipDepth: undefinedValidation,
+  }),
+  objectOf<WithRecursionSkipOptions>({
+    maxDepth: undefinedValidation,
+    skipDepth: maybeNumber,
+  })
+)
 
+
+const DEPTH_SYMBOL = Symbol('set-depth')
 let currentGlobalDepth = 0
 
 /**
@@ -38,20 +53,22 @@ let currentGlobalDepth = 0
 export type RecursiveValidationFactory<T> =
   (recurse: TypeValidation<T>) => AnyTypeValidation<T>
 
+export interface WithRecursionValidations<T> extends TypeValidation<T> {
+  setMaxDepth(depth: number): WithRecursionValidations<T>
+  setSkipDepth(depth: number): WithRecursionValidations<T>
+  resetDepthLimitation(): WithRecursionValidations<T>
+}
 
-export function withRecursion<T>(
+export const withRecursion = Object.assign(function _withRecursion<T>(
   factory: RecursiveValidationFactory<T>,
   options?: WithRecursionOptions
-): TypeValidation<T> {
+): WithRecursionValidations<T> {
   const {
     maxDepth,
     skipDepth,
   } = validateOptions(options)
 
-  const hasGlobal = typeof currentGlobalDepth === 'number'
-  currentGlobalDepth ??= 0
-
-  let result: TypeValidation<T>
+  let result: WithRecursionValidations<T>
   const type = () => `↻(${result[typeValidatorType]})`
   const resultReferenceFunc: TypeValidationFunc<T> = (value, reject): value is T => {
     if (result === undefined) {
@@ -79,13 +96,38 @@ export function withRecursion<T>(
   const resultReference = registerRejectingValidator(
     resultReferenceFunc,
     '↻(Recursive)',
-    (transformation, args) => result[transformValidation](transformation, args)
+    (transformation, args) => {
+      switch (transformation) {
+        case DEPTH_SYMBOL:
+          if (args.length !== 1 || !isWithRecursionOptions(args[0])) {
+            throw new Error('Invalid transformation')
+          }
+
+          return withRecursion(factory, args[0])
+        default:
+          return result[transformValidation](transformation, args)
+      }
+    },
   )
 
-  result = asRejectingValidator(factory(resultReference), type)
+  result = Object.assign(asRejectingValidator(factory(resultReference), type), {
+    setMaxDepth: (depth: number) => withRecursion.setMaxDepth(result, depth),
+    setSkipDepth: (depth: number) => withRecursion.setSkipDepth(result, depth),
+    resetDepthLimitation: () => withRecursion.resetDepthLimitation(result),
+  })
 
   return result
-}
+}, {
+  setMaxDepth<T extends TypeValidation<any>>(validation: T, depth: number): T {
+    return validation[transformValidation](DEPTH_SYMBOL, [{ maxDepth: depth }]) as T
+  },
+  setSkipDepth<T extends TypeValidation<any>>(validation: T, depth: number): T {
+    return validation[transformValidation](DEPTH_SYMBOL, [{ skipDepth: depth }]) as T
+  },
+  resetDepthLimitation<T extends TypeValidation<any>>(validation: T): T {
+    return validation[transformValidation](DEPTH_SYMBOL, [{}]) as T
+  },
+})
 
 const optionsKeys: (keyof WithRecursionOptions)[] = [
   'maxDepth',
