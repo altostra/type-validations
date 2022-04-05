@@ -56,21 +56,21 @@ export type RecursiveValidationFactory<T> =
 /**
  * A type validation that validate recursive type.
  */
-export interface WithRecursionValidations<T> extends TypeValidation<T> {
+export interface WithRecursionValidation<T> extends TypeValidation<T> {
   /**
    * Creates a new type validation in which max depth is set as specified
    * @param depth The max depth at which type validation fails without continuing deeper
    */
-  withMaxDepthOf(depth: number): WithRecursionValidations<T>
+  withMaxDepthOf(depth: number): WithRecursionValidation<T>
   /**
    * Creates a new type validation in which the skip depth is set as specified
    * @param depth The depth at which type validation passes without continuing deeper
    */
-  withSkipAtDepthOf(depth: number): WithRecursionValidations<T>
+  withSkipAtDepthOf(depth: number): WithRecursionValidation<T>
   /**
    * Creates a new type validation in which there are not depth limitations
    */
-  withoutDepthLimitations(): WithRecursionValidations<T>
+  withoutDepthLimitations(): WithRecursionValidation<T>
 }
 
 export const withRecursion = Object.assign(
@@ -85,13 +85,13 @@ export const withRecursion = Object.assign(
   function _withRecursion<T>(
     factory: RecursiveValidationFactory<T>,
     options?: WithRecursionOptions
-  ): WithRecursionValidations<T> {
+  ): WithRecursionValidation<T> {
     const {
       maxDepth,
       skipDepth,
     } = validateOptions(options)
 
-    let result: WithRecursionValidations<T>
+    let result: WithRecursionValidation<T>
     const type = () => `↻(${result[typeValidatorType]})`
     const resultReferenceFunc: TypeValidationFunc<T> = (value, reject): value is T => {
       if (result === undefined) {
