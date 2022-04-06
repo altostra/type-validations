@@ -101,11 +101,11 @@ export const withRecursion = Object.assign(
       try {
         incGlobal()
 
-        if (maxDepth && currentGlobalDepth! >= maxDepth) {
+        if (maxDepth && currentGlobalDepth >= maxDepth) {
           reject?.(createRejection(`Recursion max depth has reached at ${maxDepth}`, type()))
           return false
         }
-        else if (skipDepth && currentGlobalDepth! >= skipDepth) {
+        else if (skipDepth && currentGlobalDepth >= skipDepth) {
           // Skip farther validations
           return true
         }
