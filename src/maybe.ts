@@ -29,7 +29,7 @@ export function maybe<T, TWithNull extends boolean = false>(
     ? `${baseType} | null`
     : baseType
 
-  const type = `?(${nullType})`
+  const type = () => `?(${nullType})`
 
   return registerRejectingValidator(
     (value: unknown, rejectionReason?): value is NullableType<T, TWithNull> => {
@@ -44,7 +44,7 @@ export function maybe<T, TWithNull extends boolean = false>(
           withNull
             ? rejectionMessage`Value ${value} is not ${undefined}, ${null}, nor ${literal(nullType)}`
             : rejectionMessage`Value ${value} is not ${undefined} nor ${literal(nullType)}`,
-          type
+          type()
         ))
 
         rejections?.forEach(rejection => rejectionReason(rejection))

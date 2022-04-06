@@ -15,7 +15,7 @@ import {
 export function arrayOf<T>(
   elementTypeValidation: AnyTypeValidation<T>
 ): TypeValidation<T[]> {
-  const type = `ArrayOf(${typeName(elementTypeValidation)})`
+  const type = () => `ArrayOf(${typeName(elementTypeValidation)})`
   const validation = asRejectingValidator(elementTypeValidation)
 
   return registerRejectingValidator(
@@ -23,7 +23,7 @@ export function arrayOf<T>(
       if (!Array.isArray(val)) {
         rejectionReasons && rejectionReasons(createRejection(
           rejectionMessage`Value ${val} is not an array`,
-          type
+          type()
         ))
 
         return false

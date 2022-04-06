@@ -141,6 +141,9 @@ is in fact a [*discriminated union*](https://www.typescriptlang.org/docs/handboo
 Creates a *type-validation* that checks that an object is an array with a specific length,
 and has all the provided indices validated.
 
+### [`withRecursion`](./withRecursion.md)
+Creates a *type-validator*s for a recursive type, allow limiting the recursion depth.
+
 ### [Primitives](./primitives.md)
 
 #### *Type-validations*

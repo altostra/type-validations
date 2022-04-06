@@ -79,16 +79,16 @@ export function anyOf<T extends readonly AnyTypeValidation<any>[]>(
 
 export default anyOf
 
-export function anyOfType(validations: readonly AnyTypeValidation<any>[]): string {
+export function anyOfType(validations: readonly AnyTypeValidation<any>[]): (() => string) {
   const allTypes = validations
-    .map(validation => typeName(validation))
+    .map(validation => () => typeName(validation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
     ? allTypes
     : [
       ...allTypes.slice(0, 2),
-      '...',
+      () => '...',
       ...allTypes.slice(allTypes.length - 2, allTypes.length)
     ]
 
-  return types.join(' | ')
+  return () => types.map(type => type()).join(' | ')
 }

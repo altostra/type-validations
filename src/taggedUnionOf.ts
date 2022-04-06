@@ -297,7 +297,7 @@ export function taggedUnionOf<
       if (!isObject(val)) {
         rejections?.(createRejection(
           rejectionMessage`Value ${val} is not an object`,
-          type
+          type()
         ))
 
         return false
@@ -308,7 +308,7 @@ export function taggedUnionOf<
       if (!specMap.has(tag as any)) {
         rejections?.(createRejection(
           rejectionMessage`Value ${val} has an invalid tag ${tag}`,
-          type
+          type()
         ))
 
         return false

@@ -44,15 +44,15 @@ export function allOf(
   ...validations: AnyTypeValidation<any>[]
 ): TypeValidation<IntersectionOf<ValidatedTypes<any>>> {
   const allTypes = validations
-    .map(validation => typeName(validation))
+    .map(validation => () => typeName(validation))
   const types = allTypes.length <= MAX_DISPLAYED_TYPES
     ? allTypes
     : [
       ...allTypes.slice(0, 2),
-      '...',
+      () => '...',
       ...allTypes.slice(allTypes.length - 2, allTypes.length)
     ]
-  const type = types.join(' & ')
+  const type = () => types.map(type => type()).join(' & ')
 
   const rejectingValidations = from(validations)
     .pipe(

@@ -92,15 +92,24 @@ export function asPredicate<T>(this: TypeValidation<T>): (val: unknown) => boole
  */
 export function registerRejectingValidator<T>(
   validator: TypeValidationFunc<T>,
-  type: string,
+  type: string | (() => string),
   transform?: (transformation: Symbol, args: unknown[]) => TypeValidation<T>
 ): TypeValidation<T> {
   Object.assign(validator, {
-    [typeValidatorType]: type,
     asPredicate,
     asTypePredicate: asPredicate,
     [transformValidation]: transform ?? (() => validator),
+  }, typeof type === 'string' && {
+    [typeValidatorType]: type,
   })
+
+  if (typeof type !== 'string') {
+    Object.defineProperty(validator, typeValidatorType, {
+      enumerable: true,
+      configurable: true,
+      get: type,
+    })
+  }
 
   return validator as TypeValidation<T>
 }
@@ -156,7 +165,9 @@ export function setValidatorRejection<T>(
  * @param validator The validator to convert to full type-validator
  * @returns A full type-validator (of a custom type)
  */
-export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeValidation<T> {
+export function asRejectingValidator<T>(
+  validator: AnyTypeValidation<T>,
+  type?: string | (() => string)): TypeValidation<T> {
   if (isTypeValidation(validator)) {
     return validator
   }
@@ -191,7 +202,7 @@ export function asRejectingValidator<T>(validator: AnyTypeValidation<T>): TypeVa
 
   const resultValidator: TypeValidation<T> = registerRejectingValidator(
     result,
-    typeName(result),
+    type ?? typeName(result),
     () => resultValidator
   )
 

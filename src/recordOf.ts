@@ -60,9 +60,9 @@ export function recordOf<T, TKey extends string = string>(
   }
 
   const keyTypeName = keysTypeValidation
-    ? typeName(keysTypeValidation)
-    : '*'
-  const type = `{ [${keyTypeName}]: ${indent(typeName(propsTypeValidation), '  ')} }`
+    ? () => typeName(keysTypeValidation!)
+    : () => '*'
+  const type = () => `{ [${keyTypeName()}]: ${indent(typeName(propsTypeValidation), '  ')} }`
   const propsValidation = asRejectingValidator(propsTypeValidation)
   const keysValidation = keysTypeValidation && asRejectingValidator(keysTypeValidation)
 
@@ -71,7 +71,7 @@ export function recordOf<T, TKey extends string = string>(
       if (!isObject(val)) {
         rejectionReasons?.(createRejection(
           rejectionMessage`Value ${val} is not an object`,
-          type,
+          type(),
         ))
 
         return false

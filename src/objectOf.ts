@@ -155,8 +155,8 @@ function objectOf<T extends object>(
 
   const allValidationTypes = validationEntries
     .map(([key, validator]) => isTuple
-      ? indent(typeName(validator), '  ')
-      : `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
+      ? () => indent(typeName(validator), '  ')
+      : () => `${literalKey(key)}: ${indent(typeName(validator), '  ')}`)
 
   // Remove length validation from printed type
   if (isTuple && strict) {
@@ -167,23 +167,23 @@ function objectOf<T extends object>(
     ? allValidationTypes
     : [
       ...allValidationTypes.slice(0, 2),
-      '...',
+      () => '...',
       ...allValidationTypes.slice(allValidationTypes.length - 2, allValidationTypes.length),
     ]
 
   if (!strict && !isTuple) {
-    validationTypes.push('[*]: *')
+    validationTypes.push(() => '[*]: *')
   }
   else if (!strict) {
-    validationTypes.push('...*[]')
+    validationTypes.push(() => '...*[]')
   }
 
   const type = isTuple
-    ? `[
-  ${validationTypes.join(',\n  ')}
+    ? () => `[
+  ${validationTypes.map(type => type()).join(',\n  ')}
 ]`
-    : `{
-  ${validationTypes.join(',\n  ')}
+    : () => `{
+  ${validationTypes.map(type => type()).join(',\n  ')}
 }`
 
   const rejectorsEntries = validationEntries.map(([key, validation]) =>
@@ -197,7 +197,7 @@ function objectOf<T extends object>(
         if (!isObject(val)) {
           rejectionReasons?.(createRejection(
             rejectionMessage`Value ${val} is not an object`,
-            type
+            type()
           ))
 
           return false
@@ -205,7 +205,7 @@ function objectOf<T extends object>(
         if (isTuple && !Array.isArray(val)) {
           rejectionReasons?.(createRejection(
             rejectionMessage`Value ${val} is not an array`,
-            type
+            type()
           ))
 
           return false
@@ -238,7 +238,7 @@ function objectOf<T extends object>(
 
             rejectionReasons(createRejection(
               rejectionMessage`Object has redundant key ${key}, and failed strict validation`,
-              type,
+              type(),
               [pathKey(key)]
             ))
           })
