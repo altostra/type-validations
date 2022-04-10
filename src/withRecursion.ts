@@ -1,7 +1,7 @@
 import anyOf from './anyOf'
 import { transformValidation, TypeValidation, TypeValidationFunc } from './Common'
 import objectOf from './objectOf'
-import { maybeNumber, number, undefinedValidation } from './primitives'
+import { maybeNumber, undefinedValidation } from './primitives'
 import { asRejectingValidator, createRejection, registerRejectingValidator } from './RejectionReasons'
 import { AnyTypeValidation, typeValidatorType } from '.'
 
@@ -116,7 +116,7 @@ export const withRecursion = Object.assign(
         decGlobal()
       }
     }
-    const resultReference = registerRejectingValidator(
+    const resultValidation = registerRejectingValidator(
       resultReferenceFunc,
       '↻(Recursive)',
       (transformation, args) => {
@@ -132,6 +132,15 @@ export const withRecursion = Object.assign(
         }
       },
     )
+
+    const resultReference = new Proxy(resultValidation, {
+      get(target, prop, receiver) {
+        return prop !== transformValidation
+          ? Reflect.get(target, prop, receiver)
+          // Return the validation as is without transformation
+          : receiver
+      }
+    })
 
     result = Object.assign(asRejectingValidator(factory(resultReference), type), {
       withMaxDepthOf: (depth: number) => withRecursion.withMaxDepthOf(result, depth),
