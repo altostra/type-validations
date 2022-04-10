@@ -118,7 +118,7 @@ export const withRecursion = Object.assign(
     }
     const resultValidation = registerRejectingValidator(
       resultReferenceFunc,
-      '↻(Recursive)',
+      type,
       (transformation, args) => {
         switch (transformation) {
           case DEPTH_SYMBOL:
@@ -135,10 +135,13 @@ export const withRecursion = Object.assign(
 
     const resultReference = new Proxy(resultValidation, {
       get(target, prop, receiver) {
-        return prop !== transformValidation
-          ? Reflect.get(target, prop, receiver)
-          // Return the validation as is without transformation
-          : () => receiver
+        // Define special internal behaviors
+        switch (prop) {
+          case transformValidation: return () => receiver
+          case typeValidatorType: return '↻(Recursive)'
+
+          default: return Reflect.get(target, prop, receiver)
+        }
       }
     })
 
