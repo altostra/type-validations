@@ -138,7 +138,7 @@ export const withRecursion = Object.assign(
         return prop !== transformValidation
           ? Reflect.get(target, prop, receiver)
           // Return the validation as is without transformation
-          : receiver
+          : () => receiver
       }
     })
 
