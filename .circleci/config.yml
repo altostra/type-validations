@@ -15,6 +15,10 @@ jobs:
       - checkout
 
       - run:
+          name: Test how stupid they are
+          command: echo "No Shit"
+          
+      - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
