@@ -10,7 +10,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/node:12.22
+      - image: cimg/node:16.15
     steps:
       - checkout
 
@@ -37,7 +37,7 @@ jobs:
 
   version-bump:
     docker:
-      - image: cimg/node:12.22
+      - image: cimg/node:16.15
     steps:
       - restore_cache:
           key: alto-core-build-{{ .Environment.CIRCLE_SHA1 }}
