@@ -1,12 +1,12 @@
-import { anyOf, UnionOf } from './anyOf'
-import { MAX_DISPLAYED_TYPES, TypeValidation } from './Common'
-import { is } from './is'
+import type { UnionOf } from './anyOf'
+import type { TypeValidation } from './Common'
+import { MAX_DISPLAYED_TYPES } from './Common'
 import {
-  createRejection,
-  literal,
-  registerRejectingValidator,
-  rejectionMessage
-  } from './RejectionReasons'
+	createRejection,
+	literal,
+	registerRejectingValidator,
+	rejectionMessage,
+} from './RejectionReasons'
 import { typeOf } from './typeOf'
 
 /**
@@ -22,34 +22,34 @@ export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<U
  */
 export function enumOf<T>(...values: readonly T[]): TypeValidation<T>
 export function enumOf<T extends readonly any[]>(...values: T): TypeValidation<UnionOf<T>> {
-  const validValues = new Set(values)
-  const types = values.map(typeOf)
+	const validValues = new Set(values)
+	const types = values.map(typeOf)
 
-  const typeParts = types.length <= MAX_DISPLAYED_TYPES
-    ? types
-    : [
-      ...types.slice(0, 2),
-      '...',
-      ...types.slice(types.length - 2, types.length)
-    ]
+	const typeParts = types.length <= MAX_DISPLAYED_TYPES
+		? types
+		: [
+			...types.slice(0, 2),
+			'...',
+			...types.slice(types.length - 2, types.length),
+		]
 
-  const type = typeParts.join(' | ')
+	const type = typeParts.join(' | ')
 
-  return registerRejectingValidator(
-    (val, rejectionsHandler?): val is UnionOf<T> => {
-      const isValid = validValues.has(val)
+	return registerRejectingValidator(
+		(val, rejectionsHandler?): val is UnionOf<T> => {
+			const isValid = validValues.has(val)
 
-      if (!isValid && rejectionsHandler) {
-        rejectionsHandler(createRejection(
-          rejectionMessage`Value ${val} is not one of the valid values: ${literal(types.join(', '))}`,
-          type,
-        ))
-      }
+			if (!isValid && rejectionsHandler) {
+				rejectionsHandler(createRejection(
+					rejectionMessage`Value ${val} is not one of the valid values: ${literal(types.join(', '))}`,
+					type,
+				))
+			}
 
-      return isValid
-    },
-    type
-  )
+			return isValid
+		},
+		type,
+	)
 }
 
 export default enumOf

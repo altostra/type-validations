@@ -1,4 +1,4 @@
-import { TypeValidation } from './Common'
+import type { TypeValidation } from './Common'
 import { createRejection, registerRejectingValidator, rejectionMessage } from './RejectionReasons'
 import { typeOf } from './typeOf'
 
@@ -8,23 +8,23 @@ import { typeOf } from './typeOf'
  * @returns A validator that only allow values which strictly equal to `val`
  */
 export function is<T>(expectedValue: T): TypeValidation<T> {
-  const type = typeOf(expectedValue)
+	const type = typeOf(expectedValue)
 
-  return registerRejectingValidator(
-    ((actualValue, rejectionReason?): actualValue is T => {
-      const result = Object.is(actualValue, expectedValue)
+	return registerRejectingValidator(
+		(actualValue, rejectionReason?): actualValue is T => {
+			const result = Object.is(actualValue, expectedValue)
 
-      if (!result && rejectionReason) {
-        rejectionReason(createRejection(
-          rejectionMessage`Value ${actualValue} is not equal to ${expectedValue}`,
-          type
-        ))
-      }
+			if (!result && rejectionReason) {
+				rejectionReason(createRejection(
+					rejectionMessage`Value ${actualValue} is not equal to ${expectedValue}`,
+					type,
+				))
+			}
 
-      return result
-    }),
-    type
-  )
+			return result
+		},
+		type,
+	)
 }
 
 export default is

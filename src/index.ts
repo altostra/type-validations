@@ -1,16 +1,16 @@
 
-export { AnyTypeValidation, TypeValidation } from './Common'
+export type { AnyTypeValidation, TypeValidation } from './Common'
 export {
-  RejectionsCollector,
-  ArrayRejectionReasons,
-  ValidationRejection,
-  CUSTOM_TYPE,
-  createRejectionsCollector,
-  arrayRejectionReasons,
-  asPredicate,
-  mapRejection,
-  setValidatorRejection,
-  typeValidatorType,
+	type RejectionsCollector,
+	type ArrayRejectionReasons,
+	type ValidationRejection,
+	CUSTOM_TYPE,
+	createRejectionsCollector,
+	arrayRejectionReasons,
+	asPredicate,
+	mapRejection,
+	setValidatorRejection,
+	typeValidatorType,
 } from './RejectionReasons'
 
 export * as primitives from './primitives'
