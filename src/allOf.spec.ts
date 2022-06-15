@@ -1,84 +1,82 @@
+import { expect } from 'chai'
+import sinon from 'sinon'
 import allOf from './allOf'
 import arrayOf from './arrayOf'
 import is from './is'
 import { objectOf } from './objectOf'
 import {
-  bigint,
-  boolean,
-  number,
-  string,
-  symbol,
-  undefinedValidation
-  } from './primitives'
+	bigint,
+	boolean,
+	number,
+	string,
+	symbol,
+	undefinedValidation,
+} from './primitives'
 import { typeValidatorType } from './RejectionReasons'
 import { invalidPrimitives, primitivesChecks } from './TypeValidations.spec'
-import { expect } from 'chai'
-import sinon from 'sinon'
 
 describe('allOf type-validation', () => {
-  const type1 = arrayOf(string)
-  const type2 = objectOf({
-    length: is<2>(2),
-  }, { strict: false })
-  const allOfTest = allOf(type1, type2)
+	const type1 = arrayOf(string)
+	const type2 = objectOf({
+		length: is<2>(2),
+	}, { strict: false })
+	const allOfTest = allOf(type1, type2)
 
-  describe('When no reasons are expected', () => {
-    it('Should validate only values of the correct type', () => {
-      expect(allOfTest(['str', 'str'])).to.be.true
+	describe('When no reasons are expected', () => {
+		it('Should validate only values of the correct type', () => {
+			expect(allOfTest(['str', 'str'])).to.be.true
 
-      primitivesChecks(allOfTest, invalidPrimitives)
-    })
-  })
+			primitivesChecks(allOfTest, invalidPrimitives)
+		})
+	})
 
-  describe('When reasons are expected', () => {
-    const callback = sinon.spy()
+	describe('When reasons are expected', () => {
+		const callback = sinon.spy()
 
-    beforeEach(() => {
-      callback.resetHistory()
-    })
+		beforeEach(() => {
+			callback.resetHistory()
+		})
 
-    describe('When validator has type', () => {
-      it('Should have the correct type', () => {
-        expect(allOfTest[typeValidatorType]).to
-          .equal(`ArrayOf(string) & {
+		describe('When validator has type', () => {
+			it('Should have the correct type', () => {
+				expect(allOfTest[typeValidatorType]).to
+					.equal(`ArrayOf(string) & {
   length: 2,
   [*]: *
 }`)
+			})
 
+			it('Should have short type of build from multiple validations', () => {
+				const multiValidatorsAllOf = allOf(
+					string,
+					number,
+					undefinedValidation,
+					symbol,
+					boolean,
+					bigint,
+				)
 
-      })
+				expect(multiValidatorsAllOf[typeValidatorType]).to
+					.equal('string & number & ... & boolean & bigint')
+			})
+		})
 
-      it('Should have short type of build from multiple validations', () => {
-        const multiValidatorsAllOf = allOf(
-          string,
-          number,
-          undefinedValidation,
-          symbol,
-          boolean,
-          bigint
-        )
+		it('Should not call callback if value validates successfully', () => {
+			allOfTest(['str1', 'str2'], callback)
 
-        expect(multiValidatorsAllOf[typeValidatorType]).to
-          .equal(`string & number & ... & boolean & bigint`)
-      })
-    })
+			expect(callback.callCount).to.be.equal(0)
+		})
 
-    it('Should not call callback if value validates successfuly', () => {
-      allOfTest(['str1', 'str2'], callback)
+		it('Should call callback once value fails some validations', () => {
+			allOfTest(['str'], callback)
 
-      expect(callback.callCount).to.be.equal(0)
-    })
+			expect(callback.callCount).to.be.equal(1)
+		})
 
-    it('Should call callback once value fails some validations', () => {
-      allOfTest(['str'], callback)
+		it('Should call callback once value fails many validations', () => {
+			allOfTest(5, callback)
 
-      expect(callback.callCount).to.be.equal(1)
-    })
-
-    it('Should call callback once value fails many validations', () => {
-      allOfTest(5, callback)
-
-      expect(callback.callCount).to.be.equal(1)
-    })
-  })
+			expect(callback.callCount).to.be.equal(1)
+		})
+	})
 })

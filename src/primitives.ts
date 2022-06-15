@@ -1,41 +1,44 @@
-import { assertBy, Assertion } from './assertions'
-import { TypeValidation } from './Common'
-import { maybe } from './maybe'
-import {
-  createRejection,
-  literal,
-  registerRejectingValidator,
-  rejectionMessage,
-  ValidationRejection
-  } from './RejectionReasons'
+import type { Assertion } from './assertions'
+import { assertBy } from './assertions'
+import type { TypeValidation } from './Common'
 import type { FromTypeOf, JsType } from './JSTypes'
+import { maybe } from './maybe'
+import type {
+	ValidationRejection,
+} from './RejectionReasons'
+import {
+	createRejection,
+	literal,
+	registerRejectingValidator,
+	rejectionMessage,
+} from './RejectionReasons'
 
 function simpleTypeValidation<T extends JsType>(type: T): TypeValidation<FromTypeOf<T>> {
-  return registerRejectingValidator(
-    ((val, rejectionReason?): val is FromTypeOf<T> => {
-      if (typeof val === type) {
-        return true
-      }
+	return registerRejectingValidator(
+		(val, rejectionReason?): val is FromTypeOf<T> => {
+			if (typeof val === type) {
+				return true
+			}
 
-      rejectionReason?.(createRejection(
-        rejectionMessage`Value ${val} is not a ${literal(type)}`,
-        type))
+			rejectionReason?.(createRejection(
+				rejectionMessage`Value ${val} is not a ${literal(type)}`,
+				type))
 
-      return false
-    }),
-    type
-  )
+			return false
+		},
+		type,
+	)
 }
 
 export type ErrFactory = (val: unknown, rejections: ValidationRejection[]) => any
 
 /**
-   * Validates that the parameter is a string
-   */
+	 * Validates that the parameter is a string
+	 */
 export const string = simpleTypeValidation('string')
 
 export function stringAssertion(errFactory: ErrFactory): Assertion<string> {
-  return assertBy(string, errFactory)
+	return assertBy(string, errFactory)
 }
 
 /**
@@ -44,7 +47,7 @@ export function stringAssertion(errFactory: ErrFactory): Assertion<string> {
 export const number = simpleTypeValidation('number')
 
 export function numberAssertion(errFactory: ErrFactory): Assertion<number> {
-  return assertBy(number, errFactory)
+	return assertBy(number, errFactory)
 }
 
 /**
@@ -53,31 +56,31 @@ export function numberAssertion(errFactory: ErrFactory): Assertion<number> {
 export const boolean = simpleTypeValidation('boolean')
 
 export function booleanAssertion(errFactory: ErrFactory): Assertion<boolean> {
-  return assertBy(boolean, errFactory)
+	return assertBy(boolean, errFactory)
 }
 
 /**
  * Validates that the parameter is a null
  */
 export const nullValidation = registerRejectingValidator(
-  ((x: unknown, rejectionReason?): x is null => {
-    if (x === null) {
-      return true
-    }
+	(x: unknown, rejectionReason?): x is null => {
+		if (x === null) {
+			return true
+		}
 
-    rejectionReason?.(createRejection(
-      rejectionMessage`Value ${x} is not ${null}`,
-      'null'
-    ))
+		rejectionReason?.(createRejection(
+			rejectionMessage`Value ${x} is not ${null}`,
+			'null',
+		))
 
-    return false
-  }),
-  'null'
+		return false
+	},
+	'null',
 )
 export { nullValidation as null }
 
 export function nullAssertion(errFactory: ErrFactory): Assertion<null> {
-  return assertBy(nullValidation, errFactory)
+	return assertBy(nullValidation, errFactory)
 }
 
 /**
@@ -86,7 +89,7 @@ export function nullAssertion(errFactory: ErrFactory): Assertion<null> {
 export const undefinedValidation = simpleTypeValidation('undefined')
 
 export function undefinedAssertion(errFactory: ErrFactory): Assertion<undefined> {
-  return assertBy(undefinedValidation, errFactory)
+	return assertBy(undefinedValidation, errFactory)
 }
 
 /**
@@ -95,7 +98,7 @@ export function undefinedAssertion(errFactory: ErrFactory): Assertion<undefined>
 export const symbol = simpleTypeValidation('symbol')
 
 export function symbolAssertion(errFactory: ErrFactory): Assertion<symbol> {
-  return assertBy(symbol, errFactory)
+	return assertBy(symbol, errFactory)
 }
 
 /**
@@ -104,18 +107,18 @@ export function symbolAssertion(errFactory: ErrFactory): Assertion<symbol> {
 export const bigint = simpleTypeValidation('bigint')
 
 export function bigintAssertion(errFactory: ErrFactory): Assertion<bigint> {
-  return assertBy(bigint, errFactory)
+	return assertBy(bigint, errFactory)
 }
 
 /**
  * Validates any parameter
  */
 export const any = registerRejectingValidator(
-  ((x: unknown): x is any => true),
-  '*'
+	(x: unknown): x is any => true,
+	'*',
 )
 export function anyAssertion(errFactory?: ErrFactory): Assertion<any> {
-  return () => { }
+	return () => { }
 }
 
 /**
@@ -130,19 +133,19 @@ export const unknownAssertion: (errFactory?: ErrFactory) => Assertion<unknown> =
  * Invalidates any parameter
  */
 export const never = registerRejectingValidator(
-  ((val, rejectedReason?): val is never => {
-    rejectedReason?.(createRejection(
-      rejectionMessage`Value ${val} exists therefor is not 'never'.`,
-      'X (never)'
-    ))
+	(val, rejectedReason?): val is never => {
+		rejectedReason?.(createRejection(
+			rejectionMessage`Value ${val} exists therefor is not 'never'.`,
+			'X (never)',
+		))
 
-    return false
-  }),
-  'X (never)'
+		return false
+	},
+	'X (never)',
 )
 
 export function assert(errFactory: ErrFactory): Assertion<never> {
-  return assertBy(never, errFactory)
+	return assertBy(never, errFactory)
 }
 
 /**
@@ -151,7 +154,7 @@ export function assert(errFactory: ErrFactory): Assertion<never> {
 export const maybeString = maybe(string)
 
 export function maybeStringAssertion(errFactory: ErrFactory): Assertion<string | undefined> {
-  return assertBy(maybeString, errFactory)
+	return assertBy(maybeString, errFactory)
 }
 
 /**
@@ -160,7 +163,7 @@ export function maybeStringAssertion(errFactory: ErrFactory): Assertion<string |
 export const maybeNumber = maybe(number)
 
 export function maybeNumberAssertion(errFactory: ErrFactory): Assertion<number | undefined> {
-  return assertBy(maybeNumber, errFactory)
+	return assertBy(maybeNumber, errFactory)
 }
 
 /**
@@ -169,7 +172,7 @@ export function maybeNumberAssertion(errFactory: ErrFactory): Assertion<number |
 export const maybeBoolean = maybe(boolean)
 
 export function maybeBooleanAssertion(errFactory: ErrFactory): Assertion<boolean | undefined> {
-  return assertBy(maybeBoolean, errFactory)
+	return assertBy(maybeBoolean, errFactory)
 }
 
 /**
@@ -178,7 +181,7 @@ export function maybeBooleanAssertion(errFactory: ErrFactory): Assertion<boolean
 export const nullOrUndefined = maybe(nullValidation)
 
 export function nullOrUndefinedAssertion(errFactory: ErrFactory): Assertion<null | undefined> {
-  return assertBy(nullOrUndefined, errFactory)
+	return assertBy(nullOrUndefined, errFactory)
 }
 
 /**
@@ -187,7 +190,7 @@ export function nullOrUndefinedAssertion(errFactory: ErrFactory): Assertion<null
 export const maybeSymbol = maybe(symbol)
 
 export function maybeSymbolAssertion(errFactory: ErrFactory): Assertion<symbol | undefined> {
-  return assertBy(maybeSymbol, errFactory)
+	return assertBy(maybeSymbol, errFactory)
 }
 
 /**
@@ -196,5 +199,5 @@ export function maybeSymbolAssertion(errFactory: ErrFactory): Assertion<symbol |
 export const maybeBigint = maybe(bigint)
 
 export function maybeBigintAssertion(errFactory: ErrFactory): Assertion<bigint | undefined> {
-  return assertBy(maybeBigint, errFactory)
+	return assertBy(maybeBigint, errFactory)
 }

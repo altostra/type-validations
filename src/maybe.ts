@@ -1,17 +1,18 @@
-import { AnyTypeValidation, transformValidation, TypeValidation } from './Common'
+import type { AnyTypeValidation, TypeValidation } from './Common'
+import { transformValidation } from './Common'
 import {
-  asRejectingValidator,
-  createRejection,
-  createRejectionsCollector,
-  literal,
-  registerRejectingValidator,
-  rejectionMessage,
-  typeName
-  } from './RejectionReasons'
+	asRejectingValidator,
+	createRejection,
+	createRejectionsCollector,
+	literal,
+	registerRejectingValidator,
+	rejectionMessage,
+	typeName,
+} from './RejectionReasons'
 
 export type NullableType<T, WithNull extends boolean> = WithNull extends true
-  ? T | undefined | null
-  : T | undefined
+	? T | null | undefined
+	: T | undefined
 
 /**
 * Creates a validator that checks if a value is either of specified type or undefined
@@ -20,44 +21,44 @@ export type NullableType<T, WithNull extends boolean> = WithNull extends true
 * @returns A validator that checks if a value is either of specified type or undefined
 */
 export function maybe<T, TWithNull extends boolean = false>(
-  validator: AnyTypeValidation<T>,
-  withNull?: TWithNull
+	validator: AnyTypeValidation<T>,
+	withNull?: TWithNull,
 ): TypeValidation<NullableType<T, TWithNull>> {
-  const rejector = asRejectingValidator(validator)
-  const baseType = typeName(validator)
-  const nullType = withNull
-    ? `${baseType} | null`
-    : baseType
+	const rejector = asRejectingValidator(validator)
+	const baseType = typeName(validator)
+	const nullType = withNull
+		? `${baseType} | null`
+		: baseType
 
-  const type = () => `?(${nullType})`
+	const type = () => `?(${nullType})`
 
-  return registerRejectingValidator(
-    (value: unknown, rejectionReason?): value is NullableType<T, TWithNull> => {
-      const rejections = rejectionReason && createRejectionsCollector()
+	return registerRejectingValidator(
+		(value: unknown, rejectionReason?): value is NullableType<T, TWithNull> => {
+			const rejections = rejectionReason && createRejectionsCollector()
 
-      const result = value === undefined ||
-        (withNull && value === null) ||
-        rejector(value, rejections)
+			const result = value === undefined ||
+				(withNull && value === null) ||
+				rejector(value, rejections)
 
-      if (!result && rejectionReason) {
-        rejectionReason(createRejection(
-          withNull
-            ? rejectionMessage`Value ${value} is not ${undefined}, ${null}, nor ${literal(nullType)}`
-            : rejectionMessage`Value ${value} is not ${undefined} nor ${literal(nullType)}`,
-          type()
-        ))
+			if (!result && rejectionReason) {
+				rejectionReason(createRejection(
+					withNull
+						? rejectionMessage`Value ${value} is not ${undefined}, ${null}, nor ${literal(nullType)}`
+						: rejectionMessage`Value ${value} is not ${undefined} nor ${literal(nullType)}`,
+					type(),
+				))
 
-        rejections?.forEach(rejection => rejectionReason(rejection))
-      }
+				rejections?.forEach(rejection => rejectionReason(rejection))
+			}
 
-      return result
-    },
-    type,
-    (transformation, args) => maybe(
-      rejector[transformValidation](transformation, args),
-      withNull
-    )
-  )
+			return result
+		},
+		type,
+		(transformation, args) => maybe(
+			rejector[transformValidation](transformation, args),
+			withNull,
+		),
+	)
 }
 
 export default maybe

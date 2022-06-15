@@ -1,8 +1,19 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "mochaExplorer.require": [
-    "source-map-support/register",
-    "tsconfig-paths/register",
-    "ts-node/register"
-  ]
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"mochaExplorer.require": [
+		"source-map-support/register",
+		"tsconfig-paths/register",
+		"ts-node/register"
+	],
+	"eslint.enable": true,
+	"eslint.validate": [
+		"typescript"
+	],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"typescript.extension.sortImports.sortOnSave": false,
+	"[typescript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	}
 }

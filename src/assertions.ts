@@ -1,5 +1,6 @@
-import { AnyTypeValidation } from './Common'
-import { asRejectingValidator, ValidationRejection } from './RejectionReasons'
+import type { AnyTypeValidation } from './Common'
+import type { ValidationRejection } from './RejectionReasons'
+import { asRejectingValidator } from './RejectionReasons'
 
 /**
  * A function that if completes without throwing an error only if
@@ -15,18 +16,16 @@ export type Assertion<T> = (val: unknown) => asserts val is T
  * @returns An assertion function for the validated type
  */
 export function assertBy<T>(
-  validation: AnyTypeValidation<T>,
-  errFactory: (val: unknown, rejections: ValidationRejection[]) => unknown
+	validation: AnyTypeValidation<T>,
+	errFactory: (val: unknown, rejections: ValidationRejection[]) => unknown,
 ): Assertion<T> {
-  errFactory = errFactory
+	const rejectingValidation = asRejectingValidator(validation)
 
-  const rejectingValidation = asRejectingValidator(validation)
+	return function assertion(val: unknown) {
+		const rejections: ValidationRejection[] = []
 
-  return function assertion(val: unknown) {
-    const rejections: ValidationRejection[] = []
-
-    if (!rejectingValidation(val, rej => rejections.push(rej))) {
-      throw errFactory!(val, rejections)
-    }
-  }
+		if (!rejectingValidation(val, rej => rejections.push(rej))) {
+			throw errFactory(val, rejections)
+		}
+	}
 }

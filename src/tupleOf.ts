@@ -1,6 +1,5 @@
-import { TypeValidation } from './Common'
-import { objectOf, ObjectOfTypeValidation, ObjectOrTupleValidations } from './objectOf'
-
+import type { ObjectOfTypeValidation, ObjectOrTupleValidations } from './objectOf'
+import { objectOf } from './objectOf'
 
 /**
  * Creates a validator that validates that an object is an array with specific length,
@@ -10,9 +9,9 @@ import { objectOf, ObjectOfTypeValidation, ObjectOrTupleValidations } from './ob
  * has all the provided indices validated.
  */
 export function tupleOf<T extends any[]>(
-  ...validations: ObjectOrTupleValidations<T>
+	...validations: ObjectOrTupleValidations<T>
 ): ObjectOfTypeValidation<T> {
-  return objectOf<T>(validations, { strict: true })
+	return objectOf<T>(validations, { strict: true })
 }
 
 export default tupleOf
