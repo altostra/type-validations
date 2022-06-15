@@ -1,0 +1,7 @@
+*.js
+*.d.ts
+*.js.map
+node_modules
+
+# This ought to be the project out/dist dir
+lib

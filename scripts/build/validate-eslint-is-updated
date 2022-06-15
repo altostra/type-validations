@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+function get_main_version() {
+  local version="$1"
+  echo "$version" | sed -E -e 's/^[^0-9]*([0-9]+\.[0-9]+)\.[0-9]+([^0-9].*)?$/\1/'
+}
+
+function is_eslint_config_updated() {
+  local current_version="$(jq -r '.devDependencies."@altostra/eslint-config"' package.json)"
+  current_version="$(get_main_version "$current_version")"
+
+  local latest_version="$(npm view @altostra/eslint-config@latest --json | jq -r .version)"
+  latest_version="$(get_main_version "$latest_version")"
+
+  echo "current_version=$current_version latest_version=$latest_version"
+
+  if [ "$current_version" != "$latest_version" ]; then
+    return 1
+  fi
+}
+
+
+if is_eslint_config_updated; then
+  echo "ESLint configuration is updated to the latest version."
+else
+  echo "ESLint configuration is not fully updated.
+Please run 'npm i -D @altostra/eslint-config' and commit the changes."
+
+  exit 1
+fi
