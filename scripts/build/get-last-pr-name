@@ -16,9 +16,14 @@ Please make sure the latest commit is merge from a pull-request'
 fi
 
 ALTO_CI_PR_TITLE="$(
-    gh pr view "$PR_NUM" | \
-    grep '^title:' | \
-    sed 's/^title:[[:space:]]*//'
+gh api graphql -q '.data.repository.pullRequest.title' -F owner='{owner}' -F name='{repo}' -F number=$PR_NUM -f query='
+query($owner: String!, $name: String!, $number: Int!) {
+	repository(owner: $owner, name: $name) {
+		pullRequest(number: $number) {
+			title
+		}
+	}
+}'
 )"
 export ALTO_CI_PR_TITLE
 
