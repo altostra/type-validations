@@ -1,3 +1,4 @@
+import anyOf from './anyOf'
 import type {
 	AnyTypeValidation,
 	Key,
@@ -10,7 +11,9 @@ import {
 	pathKey,
 	transformValidation,
 } from './Common'
+import enumOf from './enumOf'
 import is from './is'
+import { boolean } from './primitives'
 import {
 	asRejectingValidator,
 	createRejection,
@@ -51,7 +54,25 @@ function literalKey(key: string): string {
 const strictnessTransformation = Symbol('strict')
 
 export interface ObjectOfOptions {
-	strict?: boolean
+	strict?: Strictness | boolean
+}
+
+export type Strictness =
+	| 'strict-locked'
+	| 'strict-unlocked'
+	| 'strict'
+	| 'unstrict-locked'
+	| 'unstrict-unlocked'
+	| 'unstrict'
+
+enum StrictnessKind {
+	Strict = 'strict',
+	StrictLocked = 'strict-locked',
+	StrictUnlocked = 'strict-unlocked',
+	Unstrict = 'unstrict',
+	UnstrictLocked = 'unstrict-locked',
+	UnstrictUnlocked = 'unstrict-unlocked',
+
 }
 
 export type RecordObjectType<T extends object> =
@@ -66,6 +87,8 @@ export type RecordObjectType<T extends object> =
  * A `TypeValidation<T>` that validates object
  */
 export interface ObjectOfTypeValidation<T extends object> extends TypeValidation<T> {
+	readonly isStrict: boolean
+
 	/**
 	 * Returns a `ObjectOfTypeValidation<T>` validation that also checks that the
 	 * object contains no unspecified properties.
@@ -123,6 +146,8 @@ export interface ObjectOfTypeValidation<T extends object> extends TypeValidation
 	 * const nonStrictlyTested = isMyObject(testedObject) // true
 	 */
 	unstrict(): ObjectOfTypeValidation<T>
+	lock(): ObjectOfTypeValidation<T>
+	unlock(): ObjectOfTypeValidation<T>
 	/**
 	 * Returns the `propertiesSpec` used to create this validation.
 	 */
@@ -150,12 +175,14 @@ function objectOf<T extends object>(
 
 	if (Array.isArray(propertySpec)) {
 		isTuple = true
-		strict = strict ?? true
+		strict = normalizeStrictness(strict ?? 'strict')
 
-		if (strict) {
+		if (isStrict(strict)) {
 			validationEntries.push(['length', is(propertySpec.length)])
 		}
 	}
+
+	const normalizedStrict = normalizeStrictness(strict)
 
 	const allValidationTypes = validationEntries
 		.map(([key, validator]) => isTuple
@@ -163,7 +190,7 @@ function objectOf<T extends object>(
 			: () => `${literalKey(key)}: ${indent(typeName(validator), '	')}`)
 
 	// Remove length validation from printed type
-	if (isTuple && strict) {
+	if (isTuple && isStrict(normalizedStrict)) {
 		allValidationTypes.pop()
 	}
 
@@ -175,10 +202,10 @@ function objectOf<T extends object>(
 			...allValidationTypes.slice(allValidationTypes.length - 2, allValidationTypes.length),
 		]
 
-	if (!strict && !isTuple) {
+	if (!isStrict(normalizedStrict) && !isTuple) {
 		validationTypes.push(() => '[*]: *')
 	}
-	else if (!strict) {
+	else if (!isStrict(normalizedStrict)) {
 		validationTypes.push(() => '...*[]')
 	}
 
@@ -226,7 +253,7 @@ function objectOf<T extends object>(
 						}),
 					))
 
-				if (!strict || !result) {
+				if (!isStrict(normalizedStrict) || !result) {
 					return result
 				}
 
@@ -255,21 +282,23 @@ function objectOf<T extends object>(
 						([key, validation]) => [key, validation[transformValidation](transformation, args)],
 					)
 
-				let isStrict = strict
+				let resultStrict = normalizedStrict
 
 				if (transformation === strictnessTransformation) {
 					const [strict] = args
 
-					if (typeof strict !== 'boolean') {
+					if (!isValidStrictness(strict)) {
 						throw new Error(`Invalid strictness arg!
 Arg: ${strict}`)
 					}
 
-					isStrict = strict
+					if (isUnlocked(strict) || !isLocked(normalizedStrict)) {
+						resultStrict = normalizeStrictness(strict)
+					}
 				}
 
 				// Remove length validation from explicit validator (it would be re-added)
-				if (isTuple && strict) {
+				if (isTuple && isStrict(normalizedStrict)) {
 					transformedValidators.pop()
 				}
 
@@ -277,19 +306,63 @@ Arg: ${strict}`)
 					? transformedValidators.map(([, validation]) => validation)
 					: fromEntries(transformedValidators) as any
 
-				return objectOf(objectOfValidators, { strict: isStrict })
+				return objectOf(objectOfValidators, { strict: resultStrict })
 			},
 		), {
+			// Overridden below
+			isStrict: false,
 			strict() {
 				return validation.strict(result)
 			},
 			unstrict() {
 				return validation.unstrict(result)
 			},
+			lock() {
+				if (isLocked(normalizedStrict)) {
+					return result
+				}
+				else if (isStrict(normalizedStrict)) {
+					return result[transformValidation](
+						strictnessTransformation,
+						[StrictnessKind.StrictLocked],
+					) as ObjectOfTypeValidation<T>
+				}
+				else {
+					return result[transformValidation](
+						strictnessTransformation,
+						[StrictnessKind.UnstrictLocked],
+					) as ObjectOfTypeValidation<T>
+				}
+			},
+			unlock() {
+				if (!isLocked(normalizedStrict)) {
+					return result
+				}
+				else if (isStrict(normalizedStrict)) {
+					return result[transformValidation](
+						strictnessTransformation,
+						[StrictnessKind.StrictUnlocked],
+					) as ObjectOfTypeValidation<T>
+				}
+				else {
+					return result[transformValidation](
+						strictnessTransformation,
+						[StrictnessKind.UnstrictUnlocked],
+					) as ObjectOfTypeValidation<T>
+				}
+			},
 			propertySpec: () => (Array.isArray(propertySpec)
 				? [...propertySpec]
 				: { ...propertySpec }) as typeof propertySpec,
 		})
+
+	// Lock `isStrict`
+	Object.defineProperty(result, 'isStrict', {
+		configurable: true,
+		enumerable: true,
+		writable: false,
+		value: isStrict(normalizedStrict),
+	})
 
 	return result
 }
@@ -301,16 +374,59 @@ const validation = Object.assign(
 	 * @param validation The validation to make strict
 	 */
 		strict<T extends TypeValidation<any>>(validation: T): T {
-			return validation[transformValidation](strictnessTransformation, [true]) as T
+			return validation[transformValidation](strictnessTransformation, [StrictnessKind.Strict]) as T
 		},
 		/**
 	* Returns a new validation where all nested `objectOf` validations are non-strict
 	* @param validation The validation to make non-strict
 	*/
 		unstrict<T extends TypeValidation<any>>(validation: T): T {
-			return validation[transformValidation](strictnessTransformation, [false]) as T
+			return validation[transformValidation](strictnessTransformation, [StrictnessKind.Unstrict]) as T
 		},
 	})
 
 export { validation as objectOf }
 export default validation
+
+const isValidStrictness = anyOf(
+	boolean,
+	enumOf<Strictness>(
+		'strict',
+		'strict-locked',
+		'strict-unlocked',
+		'unstrict',
+		'unstrict-locked',
+		'unstrict-unlocked',
+	),
+)
+
+function normalizeStrictness(strict: Strictness | boolean = 'unstrict'): Strictness {
+	if (typeof strict === 'boolean') {
+		strict = strict
+			? 'strict'
+			: 'unstrict'
+	}
+	else if (isUnlocked(strict)) {
+		strict = strict === 'strict-unlocked'
+			? 'strict'
+			: 'unstrict'
+	}
+
+	return strict
+}
+
+function isStrict(strict: Strictness): boolean {
+	return strict === 'strict' ||
+		strict === 'strict-locked' ||
+		strict === 'strict-unlocked'
+}
+
+function isLocked(strict: Strictness): boolean {
+	return strict === 'strict-locked' ||
+		strict === 'unstrict-locked'
+}
+
+function isUnlocked(strict?: Strictness | boolean): boolean {
+	return strict === 'strict-unlocked' ||
+		strict === 'unstrict-unlocked'
+}
