@@ -90,13 +90,15 @@ export interface ObjectOfTypeValidation<T extends object> extends TypeValidation
 	readonly isStrict: boolean
 
 	/**
-	 * Returns a `ObjectOfTypeValidation<T>` validation that also checks that the
+	 * Returns an `ObjectOfTypeValidation<T>` validation that also checks that the
 	 * object contains no unspecified properties.
 	 *
 	 * Affect all `objectOf` validations,	\
 	 * If one of the specified properties is also an object validated using `objectOf`,
 	 * in the returned validation the property would also perform strict validations,
 	 * and so on, recursively.
+	 *
+	 * This method returns a strict validation even if the receiver is locked (@see lock)
 	 * @example
 	 * const testedObject = {
 	 *	 nested: {
@@ -118,13 +120,15 @@ export interface ObjectOfTypeValidation<T extends object> extends TypeValidation
 	 */
 	strict(): ObjectOfTypeValidation<T>
 	/**
-	 * Returns a `ObjectOfTypeValidation<T>` validation that only validates the
+	 * Returns an `ObjectOfTypeValidation<T>` validation that only validates the
 	 * specified properties and never checks that an object contains other, unspecified, properties.
 	 *
 	 * Affect all `objectOf` validations,	\
 	 * If one of the specified properties is also an object validated using `objectOf`,
 	 * in the returned validation the property would also perform non-strict validations,
 	 * and so on, recursively.
+	 *
+	 * This method returns a non-strict validation even if the receiver is locked (@see lock)
 	 * @example
 	 * const testedObject = {
 	 *	 nested: {
@@ -146,7 +150,67 @@ export interface ObjectOfTypeValidation<T extends object> extends TypeValidation
 	 * const nonStrictlyTested = isMyObject(testedObject) // true
 	 */
 	unstrict(): ObjectOfTypeValidation<T>
+	/**
+	 * Returns an `ObjectOfTypeValidation<T>` validation that is strict-locked.
+	 * A strict-locked `ObjectOfTypeValidation<T>` validation does not change strictness
+	 * When it is included in another TypeValidation and that TypeValidation is made strict
+	 * or unstrict.
+	 *
+	 * When either `strict()` or `unstrict()` are being called directly on an `ObjectOfTypeValidation<T>`
+	 * the lock is being ignored.
+	 * @example
+	 * const testedObject = {
+	 *   otherProperty: true,
+	 *   nested: {
+	 *     a: 1,
+	 *     b: 2,
+	 *   },
+	 * }
+	 *
+	 * const isNestedStrict = objectOf({
+	 *   a: number,
+	 * }).strict()
+	 *
+	 * const isMyObject = objectOf({
+	 *   nested: isNestedStrict,
+	 * }).unstrict()
+	 * const isMyObjectNestedLocked = objectOf({
+	 *   nested: isNestedStrict.lock(),
+	 * }).unstrict()
+	 *
+	 * const tested = isMyObject(testedObject) // true
+	 *
+	 * // Fails validation because the `nested` validation remains strict
+	 * const lockTested = isMyObjectNestedLocked(testedObject) // false
+	 * @example
+	 * const testedObject = {
+	 *   nested: {
+	 *     a: 1,
+	 *     b: 2,
+	 *   },
+	 * }
+	 *
+	 * const isNested = objectOf({
+	 *   a: number,
+	 * }).unstrict()
+	 *
+	 * const isMyObject = objectOf({
+	 *   nested: isNested,
+	 * }).strict()
+	 * const isMyObjectNestedLocked = objectOf({
+	 *   nested: isNested.lock(),
+	 * }).strict()
+	 *
+	 * const tested = isMyObject(testedObject) // false
+	 *
+	 * // Succeeds validation because the `nested` validation remains non-strict
+	 * const lockTested = isMyObjectNestedLocked(testedObject) // true
+	 */
 	lock(): ObjectOfTypeValidation<T>
+	/**
+	 * Returns an `ObjectOfTypeValidation<T>` validation that is never strict-locked
+	 * regardless of if the receiver is strict-locked or not.
+	 */
 	unlock(): ObjectOfTypeValidation<T>
 	/**
 	 * Returns the `propertiesSpec` used to create this validation.
@@ -312,10 +376,10 @@ Arg: ${strict}`)
 			// Overridden below
 			isStrict: false,
 			strict() {
-				return validation.strict(result)
+				return validation.strict(result.unlock())
 			},
 			unstrict() {
-				return validation.unstrict(result)
+				return validation.unstrict(result.unlock())
 			},
 			lock() {
 				if (isLocked(normalizedStrict)) {
@@ -370,16 +434,16 @@ Arg: ${strict}`)
 const validation = Object.assign(
 	objectOf, {
 		/**
-	 * Returns a new validation where all nested `objectOf` validations are strict
-	 * @param validation The validation to make strict
-	 */
+	  * Returns a new validation where all nested `objectOf` validations are strict (unless they are locked)
+	  * @param validation The validation to make strict
+	  */
 		strict<T extends TypeValidation<any>>(validation: T): T {
 			return validation[transformValidation](strictnessTransformation, [StrictnessKind.Strict]) as T
 		},
 		/**
-	* Returns a new validation where all nested `objectOf` validations are non-strict
-	* @param validation The validation to make non-strict
-	*/
+		* Returns a new validation where all nested `objectOf` validations are non-strict (unless they are locked)
+		* @param validation The validation to make non-strict
+		*/
 		unstrict<T extends TypeValidation<any>>(validation: T): T {
 			return validation[transformValidation](strictnessTransformation, [StrictnessKind.Unstrict]) as T
 		},
