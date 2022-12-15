@@ -32,6 +32,25 @@ describe('objectOf type-validation', () => {
 		allOf(strict),
 	)
 
+	const strictLocked = madeStrict.lock()
+	const nonStrictLocked = madeUnstrict.lock()
+
+	const strictUnlocked = strictLocked.unlock()
+	const nonStrictUnlocked = nonStrictLocked.unlock()
+
+	const deepStrictLocked = objectOf({
+		obj: strictLocked,
+	}).unstrict()
+	const deepNonStrictLocked = objectOf({
+		obj: nonStrictLocked,
+	}).strict()
+	const deepStrictUnlocked = objectOf({
+		obj: strictUnlocked,
+	}).unstrict()
+	const deepNonStrictUnlocked = objectOf({
+		obj: nonStrictUnlocked,
+	}).strict()
+
 	const strictObj = {
 		num: 5,
 		str: 'a-string',
@@ -40,6 +59,22 @@ describe('objectOf type-validation', () => {
 		...strictObj,
 		other: true,
 	}
+
+	const strictStrictWrapper = {
+		obj: strictObj,
+	}
+	const strictNonStrictWrapper = {
+		obj: nonStrictObj,
+	}
+	const nonStrictStrictWrapper = {
+		obj: strictObj,
+		other: true,
+	}
+	const nonStrictNonStrictWrapper = {
+		obj: nonStrictObj,
+		other: true,
+	}
+
 	const strictTuple = objectOf([number, string] as const, { strict: true })
 	const nonStrictTuple = objectOf([number, string], { strict: false })
 	const strictTupleArr = [5, 'a-string']
@@ -47,25 +82,57 @@ describe('objectOf type-validation', () => {
 
 	describe('When no reasons are expected', () => {
 		it('Should validate only values of the correct type', () => {
-			expect(strict(strictObj)).to.be.true
-			expect(strict(nonStrictObj)).to.be.false
-			expect(nonStrict(strictObj)).to.be.true
-			expect(nonStrict(nonStrictObj)).to.be.true
+			expect(strict(strictObj), 'strict(strictObj)').to.be.true
+			expect(strict(nonStrictObj), 'strict(nonStrictObj)').to.be.false
+			expect(nonStrict(strictObj), 'nonStrict(strictObj)').to.be.true
+			expect(nonStrict(nonStrictObj), 'nonStrict(nonStrictObj)').to.be.true
 
-			expect(madeStrict(strictObj)).to.be.true
-			expect(madeStrict(nonStrictObj)).to.be.false
-			expect(madeUnstrict(strictObj)).to.be.true
-			expect(madeUnstrict(nonStrictObj)).to.be.true
+			expect(madeStrict(strictObj), 'madeStrict(strictObj)').to.be.true
+			expect(madeStrict(nonStrictObj), 'madeStrict(nonStrictObj)').to.be.false
+			expect(madeUnstrict(strictObj), 'madeUnstrict(strictObj)').to.be.true
+			expect(madeUnstrict(nonStrictObj), 'madeUnstrict(nonStrictObj)').to.be.true
 
-			expect(deepStrict(strictObj)).to.be.true
-			expect(deepStrict(nonStrictObj)).to.be.false
-			expect(deepUnstrict(strictObj)).to.be.true
-			expect(deepUnstrict(nonStrictObj)).to.be.true
+			expect(deepStrict(strictObj), 'deepStrict(strictObj)').to.be.true
+			expect(deepStrict(nonStrictObj), 'deepStrict(nonStrictObj)').to.be.false
+			expect(deepUnstrict(strictObj), 'deepUnstrict(strictObj)').to.be.true
+			expect(deepUnstrict(nonStrictObj), 'deepUnstrict(nonStrictObj)').to.be.true
 
-			expect(strictTuple(strictTupleArr)).to.be.true
-			expect(strictTuple(nonStrictTupleArr)).to.be.false
-			expect(nonStrictTuple(strictTupleArr)).to.be.true
-			expect(nonStrictTuple(nonStrictTupleArr)).to.be.true
+			expect(strictTuple(strictTupleArr), 'strictTuple(strictTupleArr)').to.be.true
+			expect(strictTuple(nonStrictTupleArr), 'strictTuple(nonStrictTupleArr)').to.be.false
+			expect(nonStrictTuple(strictTupleArr), 'nonStrictTuple(strictTupleArr)').to.be.true
+			expect(nonStrictTuple(nonStrictTupleArr), 'nonStrictTuple(nonStrictTupleArr)').to.be.true
+
+			expect(deepStrictLocked(strictStrictWrapper), 'deepStrictLocked(strictStrictWrapper)').to.be.true
+			expect(deepStrictLocked(strictNonStrictWrapper), 'deepStrictLocked(strictNonStrictWrapper)').to.be.false
+			expect(deepStrictLocked(nonStrictStrictWrapper), 'deepStrictLocked(nonStrictStrictWrapper)').to.be.true
+			expect(deepStrictLocked(nonStrictNonStrictWrapper), 'deepStrictLocked(nonStrictNonStrictWrapper)').to.be.false
+
+			expect(deepNonStrictLocked(strictStrictWrapper), 'deepNonStrictLocked(strictStrictWrapper)').to.be.true
+			expect(deepNonStrictLocked(strictNonStrictWrapper), 'deepNonStrictLocked(strictNonStrictWrapper)').to.be.true
+			expect(deepNonStrictLocked(nonStrictStrictWrapper), 'deepNonStrictLocked(nonStrictStrictWrapper)').to.be.false
+			expect(
+				deepNonStrictLocked(nonStrictNonStrictWrapper),
+				'deepNonStrictLocked(nonStrictNonStrictWrapper)',
+			).to.be.false
+
+			expect(deepStrictUnlocked(strictStrictWrapper), 'deepStrictUnlocked(strictStrictWrapper)').to.be.true
+			expect(deepStrictUnlocked(strictNonStrictWrapper), 'deepStrictUnlocked(strictNonStrictWrapper)').to.be.true
+			expect(deepStrictUnlocked(nonStrictStrictWrapper), 'deepStrictUnlocked(nonStrictStrictWrapper)').to.be.true
+			expect(deepStrictUnlocked(nonStrictNonStrictWrapper), 'deepStrictUnlocked(nonStrictNonStrictWrapper)').to.be.true
+
+			expect(deepNonStrictUnlocked(strictStrictWrapper), 'deepNonStrictUnlocked(strictStrictWrapper)').to.be.true
+			expect(
+				deepNonStrictUnlocked(strictNonStrictWrapper),
+				'deepNonStrictUnlocked(strictNonStrictWrapper)',
+			).to.be.false
+			expect(
+				deepNonStrictUnlocked(nonStrictStrictWrapper),
+				'deepNonStrictUnlocked(nonStrictStrictWrapper)',
+			).to.be.false
+			expect(
+				deepNonStrictUnlocked(nonStrictNonStrictWrapper),
+				'deepNonStrictUnlocked(nonStrictNonStrictWrapper)',
+			).to.be.false
 
 			primitivesChecks(strict, invalidPrimitives)
 			primitivesChecks(nonStrict, invalidPrimitives)

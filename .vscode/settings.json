@@ -12,8 +12,5 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": true
 	},
-	"typescript.extension.sortImports.sortOnSave": false,
-	"[typescript]": {
-		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
-	}
+	"typescript.extension.sortImports.sortOnSave": false
 }
