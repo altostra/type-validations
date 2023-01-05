@@ -70,7 +70,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "92:2f:bd:70:d7:69:51:81:21:d3:87:2d:65:d6:10:66"
+            - "ea:65:c1:e6:c3:92:16:76:63:d6:ee:8a:a2:1f:7f:6c"
 
       - run:
           name: set-ssh fingerprint
